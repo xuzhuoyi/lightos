@@ -12,5 +12,6 @@
 
 l_uint32_t LTaskIncrementTick( void );
 l_uint32_t LTaskCreate( void );
+void LTaskStartScheduler( void );
 
 #endif /* INCLUDE_TASK_H_ */
