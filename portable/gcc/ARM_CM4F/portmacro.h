@@ -1,0 +1,26 @@
+/*
+ * portmacro.h
+ *
+ *  Created on: 2017Äê1ÔÂ25ÈÕ
+ *      Author: xzy47
+ */
+
+#ifndef PORTABLE_PORTMACRO_H_
+#define PORTABLE_PORTMACRO_H_
+
+#include <stdint.h>
+
+typedef uint8_t l_uint8_t;
+typedef uint16_t l_uint16_t;
+typedef uint32_t l_uint32_t;
+typedef uint64_t l_uint64_t;
+
+typedef int8_t l_int8_t;
+typedef int16_t l_int16_t;
+typedef int32_t l_int32_t;
+typedef int64_t l_int64_t;
+
+#define LPORT_NVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
+#define LPORT_NVIC_PENDSVSET_BIT		( 1UL << 28UL )
+
+#endif /* PORTABLE_PORTMACRO_H_ */
