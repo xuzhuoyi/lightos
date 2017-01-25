@@ -10,4 +10,6 @@
 
 #define LCONFIG_OS_TIMESLICE 5
 
+#define LPortPendSVHandler PendSV_Handler
+
 #endif /* INCLUDE_LIGHTOS_CONFIG_H_ */
