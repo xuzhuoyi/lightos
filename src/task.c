@@ -16,8 +16,8 @@ l_uint8_t l_nextTaskID = 0;
 
 l_uint32_t PSP_array[3];
 
-l_uint32_t task0_stack[17];
-l_uint32_t task1_stack[17];
+l_uint32_t task0_stack[18];
+l_uint32_t task1_stack[18];
 
 
 extern void Task_0();	 //任务0
@@ -43,16 +43,18 @@ l_uint32_t LTaskIncrementTick( void )
 
 l_uint32_t LTaskCreate( void )
 {
-	PSP_array[0] = ((unsigned int) task0_stack) + (sizeof task0_stack) - 16*4;
+	PSP_array[0] = ((unsigned int) task0_stack) + (sizeof task0_stack) - 17*4;
 	    //PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
-	    HW32_REG((PSP_array[0] + (14<<2))) = (unsigned long) Task_0; /* PC */
+	    HW32_REG((PSP_array[0] + (15<<2))) = (unsigned long) Task_0; /* PC */
 	    //task0的PC存储在task0_stack[1023-16]地址  +14<<2中，即task0_stack[1022]中
-	    HW32_REG((PSP_array[0] + (15<<2))) = 0x01000000;            /* xPSR */
+	    HW32_REG((PSP_array[0] + (16<<2))) = 0x01000000;            /* xPSR */
+	    HW32_REG((PSP_array[0] + (8<<2))) = (unsigned long) Task_0;            /* LR */
 
 
-	    PSP_array[1] = ((unsigned int) task1_stack) + (sizeof task1_stack) - 16*4;
-	    HW32_REG((PSP_array[1] + (14<<2))) = (unsigned long) Task_1; /* PC */
-	    HW32_REG((PSP_array[1] + (15<<2))) = 0x01000000;            /* xPSR */
+	    PSP_array[1] = ((unsigned int) task1_stack) + (sizeof task1_stack) - 17*4;
+	    HW32_REG((PSP_array[1] + (15<<2))) = (unsigned long) Task_1; /* PC */
+	    HW32_REG((PSP_array[1] + (16<<2))) = 0x01000000;            /* xPSR */
+	    HW32_REG((PSP_array[1] + (8<<2))) = (unsigned long) Task_1;            /* LR */
 
 	Cur_TaskID = 0;
 
