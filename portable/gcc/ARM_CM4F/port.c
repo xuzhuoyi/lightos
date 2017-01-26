@@ -21,7 +21,7 @@ void LPortSysTickHandler( void )
 	    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
 
-void LPortPendSVHandler( void )
+/*void LPortPendSVHandler( void )
 {
 	l_tmpNextID = l_nextTaskID;
 	__asm volatile
@@ -30,6 +30,7 @@ void LPortPendSVHandler( void )
 			    "Cur_TaskIDConst:   .word Cur_TaskID    \n"
 				"PSP_arrayConst:    .word PSP_array     \n"
 				"l_nextTaskIDConst: .word l_tmpNextID  \n"
+			"	mrs r7, psp							\n"
 	"	mrs r0, psp							\n"
 	"	isb									\n"
 	"										\n"
@@ -57,3 +58,4 @@ void LPortPendSVHandler( void )
 	:
 	);
 }
+*/
