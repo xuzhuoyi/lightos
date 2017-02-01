@@ -14,14 +14,14 @@ extern l_uint8_t Cur_TaskID;
 l_uint8_t l_tmpNextID = 0;
 
 
-void LPortSysTickHandler( void )
+void LPortSysTickHandler(void)
 {
 	LTaskIncrementTick();
 	if(l_nextTaskID != Cur_TaskID)
 	    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
 
-void LPortInitScheduler( void )
+void LPortInitScheduler(void)
 {
 	/* 设置PSP指向任务0堆栈的栈顶 */
 	__asm volatile ("MSR psp, %0\n" : : "r" ((PSP_array[Cur_TaskID] + 16*4)) :"sp" );

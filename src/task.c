@@ -19,11 +19,7 @@ l_uint8_t l_taskNumber = 0;
 
 l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER];
 
-extern void Task_0();	 //任务0
-extern void Task_1();	 //任务1
-extern void Task_2();	 //任务2
-
-l_uint32_t LTaskIncrementTick( void )
+l_uint32_t LTaskIncrementTick(void)
 {
 	static l_uint8_t osTick;
 
@@ -40,10 +36,10 @@ l_uint32_t LTaskIncrementTick( void )
 	}
 }
 
-l_uint32_t LTaskCreate( l_uint8_t          cTID,
-		                LTaskFunction_t    pxEntry,
-		                const char * const pcName,
-						const l_uint16_t   usStackDepth )
+l_uint32_t LTaskCreate(l_uint8_t          cTID,
+                       LTaskFunction_t    pxEntry,
+                       const char * const pcName,
+                       const l_uint16_t   usStackDepth)
 {
 	l_uint32_t *task_stack = malloc(usStackDepth * sizeof(l_uint32_t));
 	PSP_array[cTID] = ((unsigned int) task_stack) + (usStackDepth * sizeof(l_uint32_t)) - 16*4;
@@ -53,12 +49,12 @@ l_uint32_t LTaskCreate( l_uint8_t          cTID,
 	HW32_REG((PSP_array[cTID] + (15<<2))) = 0x01000000;            /* xPSR */
 }
 
-void LTaskStartScheduler( void )
+void LTaskStartScheduler(void)
 {
 	LPORT_SYSTICK_ENABLE;
 }
 
-void LTaskStopScheduler( void )
+void LTaskStopScheduler(void)
 {
 	LPORT_SYSTICK_DISABLE;
 }
