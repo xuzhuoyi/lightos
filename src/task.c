@@ -68,15 +68,7 @@ void LTaskStartScheduler( void )
 	/* 设置PSP指向任务0堆栈的栈顶 */
 	__asm volatile ("MSR psp, %0\n" : : "r" ((PSP_array[Cur_TaskID] + 16*4)) :"sp" );
 
-	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-	    /**Configure the Systick
-	    */
-	  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-	  /* SysTick_IRQn interrupt configuration */
-	  HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
-	  HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
 	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
 
 	__asm volatile ("isb 0xF":::"memory");
