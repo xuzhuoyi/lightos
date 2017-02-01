@@ -21,6 +21,9 @@ typedef int32_t l_int32_t;
 typedef int64_t l_int64_t;
 
 #define LPORT_NVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
-#define LPORT_NVIC_PENDSVSET_BIT		( 1UL << 28UL )
+#define LPORT_NVIC_PENDSVSET_BIT	( 1UL << 28UL )
+
+#define LPORT_SYSTICK_ENABLE        SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk
+#define LPORT_SYSTICK_DISABLE       SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk
 
 #endif /* PORTABLE_PORTMACRO_H_ */

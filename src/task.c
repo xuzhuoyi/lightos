@@ -8,6 +8,7 @@
 
 #include "lightos.h"
 #include "stm32f4xx_hal.h"
+#include "task.h"
 
 #define HW32_REG(ADDRESS)  (*((volatile unsigned long  *)(ADDRESS)))
 
@@ -63,12 +64,11 @@ l_uint32_t LTaskCreate( void )
 
 }
 
-void LTaskStartScheduler( void )
+void LTaskInitScheduler( void )
 {
 	/* 设置PSP指向任务0堆栈的栈顶 */
 	__asm volatile ("MSR psp, %0\n" : : "r" ((PSP_array[Cur_TaskID] + 16*4)) :"sp" );
-
-	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
+	LTaskStartScheduler();
 	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
 
 	__asm volatile ("isb 0xF":::"memory");
@@ -76,4 +76,14 @@ void LTaskStartScheduler( void )
 		    //Task_0();
 	__asm volatile ("b Task_0");
 
+}
+
+void LTaskStartScheduler( void )
+{
+	LPORT_SYSTICK_ENABLE;
+}
+
+void LTaskStopScheduler( void )
+{
+	LPORT_SYSTICK_DISABLE;
 }
