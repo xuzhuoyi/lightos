@@ -6,6 +6,7 @@
  */
 
 
+#include <stdlib.h>
 #include "lightos.h"
 #include "stm32f4xx_hal.h"
 #include "task.h"
@@ -14,12 +15,9 @@
 
 l_uint8_t Cur_TaskID = 0;
 l_uint8_t l_nextTaskID = 0;
+l_uint8_t l_taskNumber = 0;
 
-l_uint32_t PSP_array[3];
-
-l_uint32_t task0_stack[128];
-l_uint32_t task1_stack[128];
-
+l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER];
 
 extern void Task_0();	 //任务0
 extern void Task_1();	 //任务1
@@ -42,26 +40,17 @@ l_uint32_t LTaskIncrementTick( void )
 	}
 }
 
-l_uint32_t LTaskCreate( LTaskFunction_t pxEntry, const char * const pcName, const l_uint16_t usStackDepth )
+l_uint32_t LTaskCreate( l_uint8_t          cTID,
+		                LTaskFunction_t    pxEntry,
+		                const char * const pcName,
+						const l_uint16_t   usStackDepth )
 {
-	l_uint32_t tmp = sizeof task0_stack;
-	PSP_array[0] = ((unsigned int) task0_stack) + (sizeof task0_stack) - 16*4;
-	    //PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
-	    HW32_REG((PSP_array[0] + (14<<2))) = (unsigned long) Task_0; /* PC */
-	    //task0的PC存储在task0_stack[1023-16]地址  +14<<2中，即task0_stack[1022]中
-	    HW32_REG((PSP_array[0] + (15<<2))) = 0x01000000;            /* xPSR */
-	   // HW32_REG((PSP_array[0] + (13<<2))) = (unsigned long) Task_0;            /* LR */
-
-
-	    PSP_array[1] = ((unsigned int) task1_stack) + (sizeof task1_stack) - 16*4;
-	    HW32_REG((PSP_array[1] + (14<<2))) = (unsigned long) Task_1; /* PC */
-	    HW32_REG((PSP_array[1] + (15<<2))) = 0x01000000;            /* xPSR */
-	   // HW32_REG((PSP_array[1] + (13<<2))) = (unsigned long) Task_1;            /* LR */
-
-	Cur_TaskID = 0;
-
-
-
+	l_uint32_t *task_stack = malloc(usStackDepth * sizeof(l_uint32_t));
+	PSP_array[cTID] = ((unsigned int) task_stack) + (usStackDepth * sizeof(l_uint32_t)) - 16*4;
+	//PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
+	HW32_REG((PSP_array[cTID] + (14<<2))) = (unsigned long) pxEntry; /* PC */
+	//task0的PC存储在task0_stack[1023-16]地址  +14<<2中，即task0_stack[1022]中
+	HW32_REG((PSP_array[cTID] + (15<<2))) = 0x01000000;            /* xPSR */
 }
 
 void LTaskStartScheduler( void )

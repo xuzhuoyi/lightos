@@ -9,7 +9,6 @@
 #include "lightos.h"
 #include "task.h"
 
-extern l_uint32_t PSP_array[3];
 extern l_uint8_t l_nextTaskID;
 extern l_uint8_t Cur_TaskID;
 l_uint8_t l_tmpNextID = 0;
