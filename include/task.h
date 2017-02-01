@@ -15,7 +15,9 @@ extern l_uint32_t PSP_array[3];
 extern l_uint8_t Cur_TaskID;
 
 l_uint32_t LTaskIncrementTick( void );
-l_uint32_t LTaskCreate( void );
+l_uint32_t LTaskCreate(  LTaskFunction_t    pxEntry,
+		                 const char * const pcName,
+						 const l_uint16_t   usStackDepth  );
 
 void LTaskStartScheduler( void );
 void LTaskStopScheduler( void );

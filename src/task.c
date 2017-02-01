@@ -42,7 +42,7 @@ l_uint32_t LTaskIncrementTick( void )
 	}
 }
 
-l_uint32_t LTaskCreate( void )
+l_uint32_t LTaskCreate( LTaskFunction_t pxEntry, const char * const pcName, const l_uint16_t usStackDepth )
 {
 	l_uint32_t tmp = sizeof task0_stack;
 	PSP_array[0] = ((unsigned int) task0_stack) + (sizeof task0_stack) - 16*4;
