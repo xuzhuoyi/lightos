@@ -10,4 +10,6 @@
 
 #include "portmacro.h"
 
+void LPortInitScheduler( void );
+
 #endif /* INCLUDE_PORTABLE_H_ */

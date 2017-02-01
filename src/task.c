@@ -64,20 +64,6 @@ l_uint32_t LTaskCreate( void )
 
 }
 
-void LTaskInitScheduler( void )
-{
-	/* 设置PSP指向任务0堆栈的栈顶 */
-	__asm volatile ("MSR psp, %0\n" : : "r" ((PSP_array[Cur_TaskID] + 16*4)) :"sp" );
-	LTaskStartScheduler();
-	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
-
-	__asm volatile ("isb 0xF":::"memory");
-
-		    //Task_0();
-	__asm volatile ("b Task_0");
-
-}
-
 void LTaskStartScheduler( void )
 {
 	LPORT_SYSTICK_ENABLE;
