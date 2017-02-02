@@ -10,25 +10,25 @@ l_nextTaskIDConst: .word l_nextTaskID
 .global PendSV_Handler
 .type PendSV_Handler, %function
 PendSV_Handler:
-	mrs r0, psp
-	isb
+    MRS     R0, PSP
+    ISB
 
-	stmdb  	r0!, {r4-r11}
-	ldr    	R1,Cur_TaskIDConst
-    ldr    	R3,PSP_arrayConst
-    ldr    	R4,l_nextTaskIDConst
+    STMDB   R0!, {R4-R11}
+    LDR     R1, Cur_TaskIDConst
+    LDR     R3, PSP_arrayConst
+    LDR     R4, l_nextTaskIDConst
 
-	ldrb	r2,[r1]
-	str    	R0,[R3, R2, LSL #2]
-	LDRB    R4,[R4]
-	STRB    R4,[R1]
-	LDR    	R0,[R3, R4, LSL #2]
+    LDRB    R2, [R1]
+    STR    	R0, [R3, R2, LSL #2]
+    LDR     R4, [R4]
+    STRB    R4, [R1]
+    LDR    	R0, [R3, R4, LSL #2]
 
-	LDMIA  	R0!,{R4-R11}
+    LDMIA  	R0!, {R4-R11}
 
-	msr psp, r0
-	isb
+    MSR     PSP, R0
+    ISB
 
-	bx lr
+	BX      LR
 
 
