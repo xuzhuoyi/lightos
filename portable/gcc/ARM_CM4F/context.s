@@ -20,7 +20,7 @@ PendSV_Handler:
 
     LDRB    R2, [R1]
     STR    	R0, [R3, R2, LSL #2]
-    LDR     R4, [R4]
+    LDRB    R4, [R4]
     STRB    R4, [R1]
     LDR    	R0, [R3, R4, LSL #2]
 
