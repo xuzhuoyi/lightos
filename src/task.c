@@ -72,10 +72,10 @@ void LTaskStopScheduler(void)
 	LPORT_SYSTICK_DISABLE;
 }
 
-l_err_t LTaskDelete(l_uint8_t ucTID)
+l_err_t LTaskDelete(l_tcb_t *pxTCB)
 {
-    if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
-        return L_ETASK_NUM_OVERFLOW;
-    PSP_array[ucTID] = 0;
+    PSP_array[pxTCB->ucTID] = 0;
+    free(pxTCB->pxStack);
+    free(pxTCB);
 
 }

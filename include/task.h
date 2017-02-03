@@ -31,6 +31,6 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 
 void LTaskStartScheduler(void);
 void LTaskStopScheduler(void);
-l_err_t LTaskDelete(l_uint8_t cTID);
+l_err_t LTaskDelete(l_tcb_t *pxTCB);
 
 #endif /* INCLUDE_TASK_H_ */
