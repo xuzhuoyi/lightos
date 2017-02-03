@@ -27,10 +27,10 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
-                    l_tcb_t *           pxHandle);
+                    l_uint32_t * const  pxHandle);
 
 void LTaskStartScheduler(void);
 void LTaskStopScheduler(void);
-l_err_t LTaskDelete(l_tcb_t *pxTCB);
+l_err_t LTaskDelete(l_uint32_t ulHandle);
 
 #endif /* INCLUDE_TASK_H_ */

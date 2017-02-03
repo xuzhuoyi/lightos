@@ -17,12 +17,12 @@ l_uint8_t Cur_TaskID = 0;
 l_uint8_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
-l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER];
+l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER] = {0};
 
 
 l_err_t LTaskIncrementTick(void)
 {
-	static l_uint8_t osTick;
+	static l_uint32_t osTick;
 
 	if(LCONFIG_OS_TIMESLICE == 0)
 	{
@@ -32,8 +32,11 @@ l_err_t LTaskIncrementTick(void)
 	if(++osTick == LCONFIG_OS_TIMESLICE)
 	{
 		 osTick = 0;
-		 if(++l_nextTaskID >= l_taskNumber)
-			 l_nextTaskID = 0;
+		 if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
+		     l_nextTaskID = 0;
+		 while(PSP_array[l_nextTaskID] == 0)
+		     if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
+		         l_nextTaskID = 0;
 	}
 	return L_EOK;
 }
@@ -42,9 +45,8 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
-                    l_tcb_t *           pxHandle)
+                    l_uint32_t * const  pxHandle)
 {
-    uint32_t tmp;
     if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
@@ -58,7 +60,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 
 	pxNewTCB->ucTID = ucTID;
 
-	pxHandle = pxNewTCB;
+	*pxHandle = (u_int32_t)pxNewTCB;
 	return L_EOK;
 }
 
@@ -72,10 +74,11 @@ void LTaskStopScheduler(void)
 	LPORT_SYSTICK_DISABLE;
 }
 
-l_err_t LTaskDelete(l_tcb_t *pxTCB)
+l_err_t LTaskDelete(l_uint32_t ulHandle)
 {
+    l_tcb_t * pxTCB = (l_tcb_t *) ulHandle;
     PSP_array[pxTCB->ucTID] = 0;
     free(pxTCB->pxStack);
     free(pxTCB);
-
+    return L_EOK;
 }
