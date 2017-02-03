@@ -19,16 +19,16 @@ PendSV_Handler:
     LDR     R4, l_nextTaskIDConst
 
     LDRB    R2, [R1]
-    STR    	R0, [R3, R2, LSL #2]
+    STR     R0, [R3, R2, LSL #2]
     LDRB    R4, [R4]
     STRB    R4, [R1]
-    LDR    	R0, [R3, R4, LSL #2]
+    LDR     R0, [R3, R4, LSL #2]
 
-    LDMIA  	R0!, {R4-R11}
+    LDMIA   R0!, {R4-R11}
 
     MSR     PSP, R0
     ISB
 
-	BX      LR
+    BX      LR
 
 
