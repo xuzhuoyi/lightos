@@ -18,4 +18,7 @@ typedef l_uint8_t l_err_t;
 #define L_ERROR              1
 #define L_ETASK_NUM_OVERFLOW 2
 
+#define L_STACK_LOW_TO_HIGH  1
+#define L_STACK_HIGH_TO_LOW  -1
+
 #endif /* INCLUDE_LDEF_H_ */

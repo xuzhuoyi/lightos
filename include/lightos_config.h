@@ -14,4 +14,6 @@
 
 #define LPortPendSVHandler PendSV_Handler
 
+#define LCONFIG_BYTE_ALIGNMENT 8
+
 #endif /* INCLUDE_LIGHTOS_CONFIG_H_ */

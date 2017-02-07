@@ -8,7 +8,6 @@
 #ifndef INCLUDE_LIGHTOS_H_
 #define INCLUDE_LIGHTOS_H_
 
-#include "lightos_config.h"
 #include "ldef.h"
 #include "portable.h"
 
