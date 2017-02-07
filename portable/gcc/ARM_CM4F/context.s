@@ -3,7 +3,7 @@
 .thumb
 
 .align 4
-Cur_TaskIDConst:   .word Cur_TaskID
+l_curTaskIDConst:   .word l_curTaskID
 PSP_arrayConst:    .word PSP_array
 l_nextTaskIDConst: .word l_nextTaskID
 
@@ -14,7 +14,7 @@ PendSV_Handler:
     ISB
 
     STMDB   R0!, {R4-R11}
-    LDR     R1, Cur_TaskIDConst
+    LDR     R1, l_curTaskIDConst
     LDR     R3, PSP_arrayConst
     LDR     R4, l_nextTaskIDConst
 

@@ -12,7 +12,8 @@
 
 extern l_uint32_t PSP_array[];
 
-extern l_uint8_t Cur_TaskID;
+extern l_uint8_t l_curTaskID;
+extern l_uint8_t l_nextTaskID;
 
 typedef struct l_taskControlBlock
 {
@@ -27,6 +28,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
+                    const l_uint32_t    ulTimeSlice,
                     l_uint32_t * const  pxHandle);
 
 void LTaskStartScheduler(void);

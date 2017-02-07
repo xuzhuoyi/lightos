@@ -13,23 +13,24 @@
 
 #define HW32_REG(ADDRESS)  (*((volatile unsigned long  *)(ADDRESS)))
 
-l_uint8_t Cur_TaskID = 0;
+l_uint8_t l_curTaskID = 0;
 l_uint8_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
 l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER] = {0};
+l_tcb_t *TCB_array[LCONFIG_TASK_MAX_NUMBER] = {0};
 
 
 l_err_t LTaskIncrementTick(void)
 {
 	static l_uint32_t osTick;
 
-	if(LCONFIG_OS_TIMESLICE == 0)
+	if(TCB_array[l_curTaskID]->ulTimeSlice == 0)
 	{
 		return L_EOK;
 	}
 
-	if(++osTick == LCONFIG_OS_TIMESLICE)
+	if(++osTick == TCB_array[l_curTaskID]->ulTimeSlice)
 	{
 		 osTick = 0;
 		 if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
@@ -45,12 +46,14 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
+                    const l_uint32_t    ulTimeSlice,
                     l_uint32_t * const  pxHandle)
 {
     if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
     l_tcb_t *pxNewTCB = malloc(sizeof (l_tcb_t));
+    TCB_array[ucTID] = pxNewTCB;
     pxNewTCB->pxStack = malloc(usStackDepth * sizeof(l_stack_t));
 	PSP_array[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
 	//PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
@@ -59,6 +62,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 	HW32_REG((PSP_array[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
 
 	pxNewTCB->ucTID = ucTID;
+	pxNewTCB->ulTimeSlice = ulTimeSlice;
 
 	*pxHandle = (u_int32_t)pxNewTCB;
 	return L_EOK;
