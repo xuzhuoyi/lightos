@@ -17,25 +17,25 @@ l_uint8_t l_curTaskID = 0;
 l_uint8_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
-l_uint32_t PSP_array[LCONFIG_TASK_MAX_NUMBER] = {0};
-l_tcb_t *TCB_array[LCONFIG_TASK_MAX_NUMBER] = {0};
+l_uint32_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
+l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 
 
 l_err_t LTaskIncrementTick(void)
 {
 	static l_uint32_t osTick;
 
-	if(TCB_array[l_curTaskID]->ulTimeSlice == 0)
+	if(l_TCBArray[l_curTaskID]->ulTimeSlice == 0)
 	{
 		return L_EOK;
 	}
 
-	if(++osTick == TCB_array[l_curTaskID]->ulTimeSlice)
+	if(++osTick == l_TCBArray[l_curTaskID]->ulTimeSlice)
 	{
 		 osTick = 0;
 		 if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
 		     l_nextTaskID = 0;
-		 while(PSP_array[l_nextTaskID] == 0)
+		 while(l_PSPArray[l_nextTaskID] == 0)
 		     if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
 		         l_nextTaskID = 0;
 	}
@@ -53,13 +53,13 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
     l_tcb_t *pxNewTCB = malloc(sizeof (l_tcb_t));
-    TCB_array[ucTID] = pxNewTCB;
+    l_TCBArray[ucTID] = pxNewTCB;
     pxNewTCB->pxStack = malloc(usStackDepth * sizeof(l_stack_t));
-	PSP_array[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
+    l_PSPArray[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
 	//PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
-	HW32_REG((PSP_array[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */
+	HW32_REG((l_PSPArray[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */
 	//task0的PC存储在task0_stack[1023-16]地址  +14<<2中，即task0_stack[1022]中
-	HW32_REG((PSP_array[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
+	HW32_REG((l_PSPArray[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
 
 	pxNewTCB->ucTID = ucTID;
 	pxNewTCB->ulTimeSlice = ulTimeSlice;
@@ -81,7 +81,7 @@ void LTaskStopScheduler(void)
 l_err_t LTaskDelete(l_uint32_t ulHandle)
 {
     l_tcb_t * pxTCB = (l_tcb_t *) ulHandle;
-    PSP_array[pxTCB->ucTID] = 0;
+    l_PSPArray[pxTCB->ucTID] = 0;
     free(pxTCB->pxStack);
     free(pxTCB);
     return L_EOK;

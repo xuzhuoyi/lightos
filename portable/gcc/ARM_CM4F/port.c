@@ -20,7 +20,7 @@ void LPortSysTickHandler(void)
 void LPortInitScheduler(void)
 {
 	/* 设置PSP指向任务0堆栈的栈顶 */
-	__asm volatile ("MSR psp, %0\n" : : "r" ((PSP_array[l_curTaskID] + 16*4)) :"sp" );
+	__asm volatile ("MSR psp, %0\n" : : "r" ((l_PSPArray[l_curTaskID] + 16*4)) :"sp" );
 	LTaskStartScheduler();
 	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
 

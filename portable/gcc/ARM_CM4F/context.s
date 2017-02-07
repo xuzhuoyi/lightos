@@ -4,7 +4,7 @@
 
 .align 4
 l_curTaskIDConst:   .word l_curTaskID
-PSP_arrayConst:    .word PSP_array
+l_PSPArrayConst:    .word l_PSPArray
 l_nextTaskIDConst: .word l_nextTaskID
 
 .global PendSV_Handler
@@ -15,7 +15,7 @@ PendSV_Handler:
 
     STMDB   R0!, {R4-R11}
     LDR     R1, l_curTaskIDConst
-    LDR     R3, PSP_arrayConst
+    LDR     R3, l_PSPArrayConst
     LDR     R4, l_nextTaskIDConst
 
     LDRB    R2, [R1]

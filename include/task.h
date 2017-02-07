@@ -10,7 +10,7 @@
 
 #include "lightos.h"
 
-extern l_uint32_t PSP_array[];
+extern l_uint32_t l_PSPArray[];
 
 extern l_uint8_t l_curTaskID;
 extern l_uint8_t l_nextTaskID;
