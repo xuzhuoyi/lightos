@@ -1,11 +1,12 @@
 
-.ref _l_curTaskID
-.ref _l_PSPArray
-.ref _l_nextTaskID
+    .ref _l_curTaskID
+    .ref _l_PSPArray
+    .ref _l_nextTaskID
 
     .def   _OS_CPU_RTOSINT_Handler
     .def   _OS_CPU_GetST0
     .def   _OS_CPU_GetST1
+    .def   _OSStartHighRdy
 
 OS_CTX_SAVE  .macro
                                                                 ; Save remaining registers.
@@ -86,27 +87,50 @@ OS_CTX_RESTORE  .macro
 .text
     .newblock
 
-.asmfunc
+    .asmfunc
+_OSStartHighRdy:
+
+    MOVL    XAR3, #_l_PSPArray
+    MOVL    XAR4, #_l_nextTaskID
+
+    MOVL    XAR4, *XAR4
+    MOVL    *XAR1, XAR4
+    MOVL    ACC, XAR4
+    LSL     ACC, #2
+    ADDL    ACC, XAR3
+    MOVL    XAR2, ACC
+    MOV     AL, *AR2
+    MOV     @SP, AL
+    OS_CTX_RESTORE
+                                                                ; IRET into task.
+    IRET
+    .endasmfunc
+
+    .asmfunc
 _OS_CPU_RTOSINT_Handler:
     OS_CTX_SAVE
 
-    MOVL    R1, _l_curTaskID
-    MOVL    R3, _l_PSPArray
-    MOVL    R4, _l_nextTaskID
+    MOVL    XAR1, #_l_curTaskID
+    MOVL    XAR3, #_l_PSPArray
+    MOVL    XAR4, #_l_nextTaskID
 
-    MOVB    R2, *R1
-    MOVL    ACC, R2 << #2
-    ADDL    ACC, R3
-    MOVL    *ACC, SP
-    MOVB    R4, *R4
-    MOVB    *R1, R4
-    MOVL    ACC, R4 << #2
-    ADDL    ACC, R3
-    MOVL    *ACC, R0
-    MOVL     SP, R0
+    MOVL    ACC, *XAR1
+    LSL     ACC, #2
+    ADDL    ACC, XAR3
+    MOVL    XAR2, ACC
+    MOV     AL, @SP
+    MOV     *AR2, AL
+    MOVL    XAR4, *XAR4
+    MOVL    *XAR1, XAR4
+    MOVL    ACC, XAR4
+    LSL     ACC, #2
+    ADDL    ACC, XAR3
+    MOVL    XAR2, ACC
+    MOV     AL, *AR2
+    MOV     @SP, AL
     OS_CTX_RESTORE
 
-    LCR      LR
+    IRET
      .endasmfunc
 
     .asmfunc
@@ -122,4 +146,6 @@ _OS_CPU_GetST1:
     POP     AL
     LRETR
     .endasmfunc
+
+
 .end

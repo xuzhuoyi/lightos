@@ -9,18 +9,18 @@
 #include "lightos.h"
 #include "task.h"
 
-interrupt void LPortOSTimer2TickHandler (void)
+interrupt void BSP_OS_TIMER2_TickHandler (void)
 {
-    LPORT_OS_TIMER2_TCR |= LPORT_OS_TIMER2_TCR_TIF;
+    BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TIF;
     LTaskIncrementTick();
-    CPU_IntSrcEn(BSP_INT_ID_INT14);
+    CPU_IntSrcEn(14u);
 }
 
 void LPortInitScheduler(void)
 {
 	/* 设置PSP指向任务0堆栈的栈顶 */
-	__asm volatile ("mov sp, %0\n" : : "r" ((l_PSPArray[l_curTaskID] + 16*4)) :"sp" );
 	LTaskStartScheduler();
+	OSStartHighRdy();
 
 }
 
@@ -39,7 +39,7 @@ l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
     l_uint32_t  *p_stk32;
 
                                                                     /* Prevent compiler warnings.                           */
-        (void)&opt;
+
 
                                                                     /* Load and pre-align stack pointer.                    */
         p_stk = pxTopOfStack;
@@ -81,4 +81,25 @@ l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
     #endif
                                                                     /* Return pointer to next free location.                */
         return ((l_stack_t *)p_stk32);
+}
+
+void  BSP_OS_TIMER2_TickInit (l_uint32_t  cnts)
+{
+                                                                /* Stop TIMER2.                                         */
+    BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TSS;
+                                                                /* Set the Prescaler.                                   */
+    BSP_OS_TIMER2_TPR  &= ~BSP_OS_TIMER2_TPR_PSC_MASK;
+    BSP_OS_TIMER2_TPRH &= ~BSP_OS_TIMER2_TPRH_PSCH_MASK;
+                                                                /* Set the Period.                                      */
+    BSP_OS_TIMER2_PRD = cnts;
+                                                                /* Set Debug mode.                                      */
+    BSP_OS_TIMER2_TCR &= ~(BSP_OS_TIMER2_TCR_FREE | BSP_OS_TIMER2_TCR_SOFT);
+                                                                /* Reload counter with period.                          */
+    BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TRB;
+                                                                /* Enable TIMER2 interrupts.                            */
+    BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TIE;
+
+    CPU_IntSrcEn(14u);
+                                                                /* Start TIMER2.                                        */
+    BSP_OS_TIMER2_TCR &= ~BSP_OS_TIMER2_TCR_TSS;
 }

@@ -9,7 +9,6 @@
 #define PORTABLE_PORTMACRO_H_
 
 #include <stdint.h>
-#include <ldef.h>
 
 #define LPORT_STACK_GROWTH_DIR L_STACK_LOW_TO_HIGH
 
@@ -31,12 +30,15 @@ typedef uint32_t l_stack_t;
 #define LPORT_SYSTICK_ENABLE        /*SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk*/
 #define LPORT_SYSTICK_DISABLE       /*SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk*/
 
+extern  cregister  volatile  unsigned  int  IFR;
+extern  cregister  volatile  unsigned  int  IER;
+
 #define  BSP_OS_TIMER2_ADDR_BASE                               (0x00000C10u)
-#define  BSP_OS_TIMER2_TIM                      *((CPU_INT32U *)(BSP_OS_TIMER2_ADDR_BASE + 0x0))
-#define  BSP_OS_TIMER2_PRD                      *((CPU_INT32U *)(BSP_OS_TIMER2_ADDR_BASE + 0x2))
-#define  BSP_OS_TIMER2_TCR                      *((CPU_INT16U *)(BSP_OS_TIMER2_ADDR_BASE + 0x4))
-#define  BSP_OS_TIMER2_TPR                      *((CPU_INT16U *)(BSP_OS_TIMER2_ADDR_BASE + 0x6))
-#define  BSP_OS_TIMER2_TPRH                     *((CPU_INT16U *)(BSP_OS_TIMER2_ADDR_BASE + 0x7))
+#define  BSP_OS_TIMER2_TIM                      *((l_uint32_t *)(BSP_OS_TIMER2_ADDR_BASE + 0x0))
+#define  BSP_OS_TIMER2_PRD                      *((l_uint32_t *)(BSP_OS_TIMER2_ADDR_BASE + 0x2))
+#define  BSP_OS_TIMER2_TCR                      *((l_uint16_t *)(BSP_OS_TIMER2_ADDR_BASE + 0x4))
+#define  BSP_OS_TIMER2_TPR                      *((l_uint16_t *)(BSP_OS_TIMER2_ADDR_BASE + 0x6))
+#define  BSP_OS_TIMER2_TPRH                     *((l_uint16_t *)(BSP_OS_TIMER2_ADDR_BASE + 0x7))
 
                                                                 /* TIMER2 Register bits.                                */
 #define  BSP_OS_TIMER2_TCR_TIF                                  0x8000u
@@ -72,5 +74,8 @@ typedef uint32_t l_stack_t;
 void CPU_IntSrcEn(l_uint16_t bit);
 l_uint16_t     OS_CPU_GetST0         (void);
 l_uint16_t     OS_CPU_GetST1         (void);
+void  BSP_OS_TIMER2_TickInit (l_uint32_t  cnts);
+void  BSP_OS_TIMER2_TickHandler(void);
+void  OS_CPU_RTOSINT_Handler(void);
 
 #endif /* PORTABLE_PORTMACRO_H_ */
