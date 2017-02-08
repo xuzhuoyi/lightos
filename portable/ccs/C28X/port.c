@@ -13,13 +13,15 @@ interrupt void BSP_OS_TIMER2_TickHandler (void)
 {
     BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TIF;
     LTaskIncrementTick();
-    CPU_IntSrcEn(14u);
+    if(l_nextTaskID != l_curTaskID)
+        IFR = IFR | (1u << (16-1));
 }
 
 void LPortInitScheduler(void)
 {
 	/* 设置PSP指向任务0堆栈的栈顶 */
 	LTaskStartScheduler();
+	IER = IER | (1u << (16-1));
 	OSStartHighRdy();
 
 }
