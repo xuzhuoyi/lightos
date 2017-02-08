@@ -115,7 +115,7 @@ _OS_CPU_RTOSINT_Handler:
     MOVL    XAR4, #_l_nextTaskID
 
     MOVL    ACC, *XAR1
-    LSL     ACC, #2
+    LSL     ACC, #1
     ADDL    ACC, XAR3
     MOVL    XAR2, ACC
     MOV     AL, @SP
@@ -130,7 +130,7 @@ _OS_CPU_RTOSINT_Handler:
     MOV     @SP, AL
     OS_CTX_RESTORE
 
-    OR      IER, #0X8000
+    OR      IER, #0XA000
 
     IRET
      .endasmfunc
