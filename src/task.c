@@ -49,10 +49,11 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     l_uint32_t * const  pxHandle)
 {
     l_stack_t *pxTopOfStack;
+	  l_tcb_t *pxNewTCB;
     if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
-    l_tcb_t *pxNewTCB = malloc(sizeof (l_tcb_t));
+    pxNewTCB = malloc(sizeof (l_tcb_t));
     l_TCBArray[ucTID] = pxNewTCB;
     pxNewTCB->pxStack = malloc(usStackDepth * sizeof(l_stack_t));
 
