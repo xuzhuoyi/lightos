@@ -7,6 +7,7 @@
 
 OS_CTX_SAVE  MACRO
    
+    using   0
     PUSH	ACC
     PUSH	PSW
     PUSH	B
@@ -32,7 +33,8 @@ OS_CTX_SAVE  MACRO
 ;********************************************************************************************************
 
 OS_CTX_RESTORE  MACRO
-                                                                ; Restore CPU registers part 1.
+      
+    using   0	  ; Restore CPU registers part 1.
     POP	    AR7
     POP	    AR6
     POP	    AR5
@@ -54,15 +56,16 @@ OS_CTX_RESTORE  MACRO
 _OSStartHighRdy:
 
     MOV     R3, _l_PSPArray
-    MOV     R4, _l_nextTaskID
+    MOV     R0, _l_nextTaskID
 
-    MOV     R4, @XAR4
-    MOV     R1, R4
-    MOV     ACC, R4
-    RL      ACC, #2
-    ADD     ACC, R3
-    MOV     R2, ACC
-    MOV     A, @R2
+    MOV     A, @R0
+    MOV     R0, A
+    MOV     ACC, R0
+    RL      A
+	RL      A
+    ADD     A, R3
+    MOV     R1, ACC
+    MOV     A, @R1
     MOV     SP, A
     OS_CTX_RESTORE
                                                                 ; IRET into task.
@@ -74,29 +77,40 @@ _OS_CPU_RTOSINT_Handler:
 
     MOV     R1, _l_curTaskID
     MOV     R3, _l_PSPArray
-    MOV     R4, _l_nextTaskID
+    MOV     R0, _l_nextTaskID
 
     MOV     ACC, @R1
-    RL      ACC, #2
-    ADD     ACC, R3
-    MOV     R2, ACC
+    RL      A
+	RL      A
+    ADD     A, R3
+	PUSH    AR1
+    MOV     R1, ACC
     MOV     A, SP
-    MOV     @R2, A
-    MOV     R4, @R4
-    MOV     @R1, R4
-    MOV     ACC, R4
-    RL      ACC, #2
-    ADD     ACC, R3
+    MOV     @R1, A
+	MOV     A, @R0
+    MOV     R0, A
+	MOV     A, R1
+	MOV     R5, A
+	POP     AR1
+	MOV     A, R0
+    MOV     @R1, A
+    MOV     ACC, R0
+    RL      A
+	RL      A
+    ADD     A, R3
     MOV     R2, ACC
-    MOV     A, @R2
+	MOV     A, R5
+	MOV     R1, A
+    MOV     A, @R1
     MOV     SP, A
     OS_CTX_RESTORE
 
     RET
 
 _OS_CPU_GetST0:
+    using   0
     PUSH    PSW
-    POP     R7
+    POP     AR7
     RET
 	
 	END
