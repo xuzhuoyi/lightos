@@ -1,9 +1,15 @@
 
-    extrn data(_l_curTaskID, _l_PSPArray, _l_nextTaskID)
+	
+?PR?OS_CPU_RTOSINT_Handler?CONTEXT    SEGMENT CODE
+?PR?OSStartHighRdy?CONTEXT            SEGMENT CODE
+?PR?OS_CPU_GetST0?CONTEXT             SEGMENT CODE
 
-    public   _OS_CPU_RTOSINT_Handler
-    public   _OS_CPU_GetST0
-    public   _OSStartHighRdy
+	
+    extrn data(l_curTaskID, l_PSPArray, l_nextTaskID)
+
+    public   OS_CPU_RTOSINT_Handler
+    public   OS_CPU_GetST0
+    public   OSStartHighRdy
 
 OS_CTX_SAVE  MACRO
    
@@ -52,11 +58,11 @@ OS_CTX_RESTORE  MACRO
 	endm
 
 
+    RSEG ?PR?OSStartHighRdy?CONTEXT
+OSStartHighRdy:
 
-_OSStartHighRdy:
-
-    MOV     R3, _l_PSPArray
-    MOV     R0, _l_nextTaskID
+    MOV     R3, #l_PSPArray
+    MOV     R0, #l_nextTaskID
 
     MOV     A, @R0
     MOV     R0, A
@@ -72,12 +78,13 @@ _OSStartHighRdy:
     RET
 
 
-_OS_CPU_RTOSINT_Handler:
+    RSEG    ?PR?OS_CPU_RTOSINT_Handler?CONTEXT
+OS_CPU_RTOSINT_Handler:
     OS_CTX_SAVE
 
-    MOV     R1, _l_curTaskID
-    MOV     R3, _l_PSPArray
-    MOV     R0, _l_nextTaskID
+    MOV     R1, #l_curTaskID
+    MOV     R3, #l_PSPArray
+    MOV     R0, #l_nextTaskID
 
     MOV     ACC, @R1
     RL      A
@@ -107,7 +114,8 @@ _OS_CPU_RTOSINT_Handler:
 
     RET
 
-_OS_CPU_GetST0:
+    RSEG    ?PR?OS_CPU_GetST0?CONTEXT
+OS_CPU_GetST0:
     using   0
     PUSH    PSW
     POP     AR7
