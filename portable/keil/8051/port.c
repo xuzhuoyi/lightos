@@ -12,6 +12,15 @@
 
 extern void OSStartHighRdy(void);
 
+l_stack_t * data l_port_8051_stk = 0;
+l_uint16_t data l_port_8051_stkdep = 0;
+
+void LPort8051PreSwitch(l_uint8_t ucTID)
+{
+	  l_port_8051_stk = l_TCBArray[ucTID]->pxStack;
+	  l_port_8051_stkdep = l_TCBArray[ucTID]->usStackDepth;
+}
+
 void Timer0Interrupt(void) interrupt 1
 {
     TH0 = 0x0FC;
@@ -28,6 +37,7 @@ void LPortInitScheduler(void)
 	/* 设置PSP指向任务0堆栈的栈顶 */
 	LTaskStartScheduler();
 	TR0 = 1;
+	LPort8051PreSwitch(0);
 	OSStartHighRdy();
 
 }

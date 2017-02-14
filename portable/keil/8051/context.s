@@ -5,11 +5,21 @@
 ?PR?OS_CPU_GetST0?CONTEXT             SEGMENT CODE
 
 	
-    extrn data(l_curTaskID, l_PSPArray, l_nextTaskID)
+    extrn data(l_port_8051_stk, l_port_8051_stkdep)
+	extrn xdata(l_curTaskID, l_PSPArray, l_nextTaskID)
 
     public   OS_CPU_RTOSINT_Handler
     public   OS_CPU_GetST0
     public   OSStartHighRdy
+		
+?STACK SEGMENT IDATA
+        RSEG ?STACK
+
+OSStack:
+		;DS n：保留n个存储单元
+        DS 40H		;分配硬件堆栈的大小
+
+OSStkStart IDATA OSStack-1
 
 OS_CTX_SAVE  MACRO
    
@@ -56,23 +66,45 @@ OS_CTX_RESTORE  MACRO
 	POP	    ACC
     
 	endm
+	
+OS_STACK_RESTORE  MACRO
+
+    using   0
+
+restore_stack:
+    INC     R0
+    MOVX    A, @DPTR
+    MOV     @R0, A
+	INC     DPTR
+    DJNZ    R5, restore_stack
+	
+	ENDM
 
 
     RSEG ?PR?OSStartHighRdy?CONTEXT
 OSStartHighRdy:
 
-    MOV     R3, #l_PSPArray
-    MOV     R0, #l_nextTaskID
+    MOV     R1, #l_port_8051_stk
+	INC     R1
+	MOV     DPH, @R1
+	INC		R1
+	MOV     DPL, @R1
 
-    MOV     A, @R0
-    MOV     R0, A
-    MOV     ACC, R0
+    MOV     R5, l_port_8051_stkdep + 1
+	MOV     R0, #OSStkStart
+	
+	OS_STACK_RESTORE
+	
+    MOV     R3, #l_PSPArray
+    MOV     DPTR, #l_nextTaskID
+	MOVX    A, @DPTR
     RL      A
 	RL      A
     ADD     A, R3
-    MOV     R1, ACC
-    MOV     A, @R1
-    MOV     SP, A
+	MOV     R0, A
+	MOV     A, @R0
+	MOV     SP, A
+	
     OS_CTX_RESTORE
                                                                 ; IRET into task.
     RET

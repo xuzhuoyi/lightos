@@ -16,7 +16,7 @@ l_uint32_t l_curTaskID = 0;
 l_uint32_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
-l_uint32_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
+l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 
 
@@ -46,7 +46,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
                     const l_uint32_t    ulTimeSlice,
-                    l_uint32_t * const  pxHandle)
+                    l_handle_t * const  pxHandle)
 {
     l_stack_t *pxTopOfStack;
 	  l_tcb_t *pxNewTCB;
@@ -71,9 +71,9 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 	//HW32_REG((l_PSPArray[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */
 	//task0的PC存储在task0_stack[1023-16]地址  +14<<2中，即task0_stack[1022]中
 	//HW32_REG((l_PSPArray[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
-
-	pxNewTCB->ucTID = ucTID;
-	pxNewTCB->ulTimeSlice = ulTimeSlice;
+    pxNewTCB->usStackDepth = usStackDepth;
+	  pxNewTCB->ucTID = ucTID;
+	  pxNewTCB->ulTimeSlice = ulTimeSlice;
 
 	*pxHandle = (l_int32_t)pxNewTCB;
 	return L_EOK;
