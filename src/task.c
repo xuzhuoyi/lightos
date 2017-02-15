@@ -65,7 +65,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
     pxTopOfStack = pxNewTCB->pxStack;
 #endif /* portSTACK_GROWTH */
 
-    l_PSPArray[ucTID] = LPortInitStack(pxTopOfStack, pxEntry);
+    l_PSPArray[ucTID] = (l_sp_t)LPortInitStack(pxTopOfStack, pxEntry);
     //l_PSPArray[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
 	//PSP_array中存储的为task0_stack数组的尾地址-16*4，即task0_stack[1023-16]地址
 	//HW32_REG((l_PSPArray[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */

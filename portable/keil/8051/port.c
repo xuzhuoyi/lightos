@@ -11,14 +11,15 @@
 #include <reg51.h>
 
 extern void OSStartHighRdy(void);
+extern l_sp_t idata OSStkStart;
 
 l_stack_t * data l_port_8051_stk = 0;
-l_uint16_t data l_port_8051_stkdep = 0;
+l_sp_t data l_port_8051_stkdep = 0;
 
 void LPort8051PreSwitch(l_uint8_t ucTID)
 {
 	  l_port_8051_stk = l_TCBArray[ucTID]->pxStack;
-	  l_port_8051_stkdep = l_TCBArray[ucTID]->usStackDepth;
+	  l_port_8051_stkdep = l_PSPArray[ucTID] - (l_sp_t)&OSStkStart;
 }
 
 void Timer0Interrupt(void) interrupt 1
@@ -56,7 +57,8 @@ l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
         p_stk8 = (l_uint8_t *)p_stk;
                                                                     /* Save registers as if auto-saved.                     */
                                                                     /* Follow stacking method in "9) Perform automatic ...  */
-        *p_stk8++ = (l_uint8_t)pxEntry;                                  /*   Save Return Address [PC+1].                        */                                                            /* ..context save" of section 3.4 in "SPRU430E"         */
+        *p_stk8++=(l_uint16_t)pxEntry;                          		/* 任务代码地址低8位 							*/
+	      *p_stk8++=(l_uint16_t)pxEntry >> 8;                                  /*   Save Return Address [PC+1].                        */                                                            /* ..context save" of section 3.4 in "SPRU430E"         */
         *p_stk8++ = 0x11;               /*   T:ST0                                              */
         *p_stk8++ = 0x33;                                    /*   ACC                                              */
         *p_stk8++ = 0x55;                                    /*   B                                              */
@@ -74,5 +76,5 @@ l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
 				*p_stk8++ = 0x00;                                    
 				*p_stk8++ = 0x11;
                                                                     /* Return pointer to next free location.                */
-        return ((l_stack_t *)p_stk8);
+        return ((l_stack_t *)(&OSStkStart + 16));
 }

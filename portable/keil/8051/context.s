@@ -11,6 +11,7 @@
     public   OS_CPU_RTOSINT_Handler
     public   OS_CPU_GetST0
     public   OSStartHighRdy
+    public   OSStkStart
 		
 ?STACK SEGMENT IDATA
         RSEG ?STACK
@@ -90,20 +91,12 @@ OSStartHighRdy:
 	INC		R1
 	MOV     DPL, @R1
 
-    MOV     R5, l_port_8051_stkdep + 1
+    MOV     R5, #l_port_8051_stkdep
 	MOV     R0, #OSStkStart
 	
 	OS_STACK_RESTORE
 	
-    MOV     R3, #l_PSPArray
-    MOV     DPTR, #l_nextTaskID
-	MOVX    A, @DPTR
-    RL      A
-	RL      A
-    ADD     A, R3
-	MOV     R0, A
-	MOV     A, @R0
-	MOV     SP, A
+	MOV     SP, R0
 	
     OS_CTX_RESTORE
                                                                 ; IRET into task.
