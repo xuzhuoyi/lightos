@@ -102,7 +102,7 @@ OS_STACK_SAVE  MACRO
 	MOV     R0, #OSStkStart
 save_stack:	
 	INC     R0
-	MOV     A, R0
+	MOV     A, @R0
     MOVX    @DPTR, A
     
 	INC     DPTR
@@ -132,10 +132,11 @@ OS_CPU_RTOSINT_Handler:
 	MOVX    A, @DPTR
 	MOV     R2, A
 	MOV     DPTR, #l_PSPArray
+	JZ      found_cur_psp
 find_cur_psp:
     INC     DPTR
 	DJNZ    R2, find_cur_psp
-	
+found_cur_psp:	
 	MOV     A, SP
 	MOVX    @DPTR, A
 	
@@ -144,10 +145,11 @@ find_cur_psp:
 	MOV     R3, A
 	MOV     R2, A
 	MOV     DPTR, #l_PSPArray
+	JZ      found_next_psp
 find_next_psp:
     INC     DPTR
 	DJNZ    R2, find_next_psp
-	
+found_next_psp:	
 	MOVX    A, @DPTR
 	MOV     SP, A
 	
@@ -158,7 +160,7 @@ find_next_psp:
 	OS_STACK_RESTORE
     OS_CTX_RESTORE
 
-    RET
+    RETI
 
     RSEG    ?PR?OS_CPU_GetST0?CONTEXT
 OS_CPU_GetST0:
