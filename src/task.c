@@ -12,8 +12,8 @@
 
 #define HW32_REG(ADDRESS)  (*((volatile unsigned long  *)(ADDRESS)))
 
-l_uint32_t l_curTaskID = 0;
-l_uint32_t l_nextTaskID = 0;
+l_base_t l_curTaskID = 0;
+l_base_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
 l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};

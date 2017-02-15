@@ -21,6 +21,7 @@ typedef long l_int32_t;
 typedef l_uint8_t l_stack_t;
 typedef l_uint32_t l_handle_t;
 typedef l_uint8_t l_sp_t;
+typedef l_uint8_t l_base_t;
 
 #define LPORT_NVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
 #define LPORT_NVIC_PENDSVSET_BIT	( 1UL << 28UL )

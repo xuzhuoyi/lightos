@@ -15,11 +15,14 @@ extern l_sp_t idata OSStkStart;
 
 l_stack_t * data l_port_8051_stk = 0;
 l_sp_t data l_port_8051_stkdep = 0;
+l_stack_t * data l_port_8051_curstk = 0;
 
 void LPort8051PreSwitch(l_uint8_t ucTID)
 {
 	  l_port_8051_stk = l_TCBArray[ucTID]->pxStack;
 	  l_port_8051_stkdep = l_PSPArray[ucTID] - (l_sp_t)&OSStkStart;
+	  l_port_8051_curstk = l_TCBArray[l_curTaskID]->pxStack;
+	
 }
 
 void Timer0Interrupt(void) interrupt 1

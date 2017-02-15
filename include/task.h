@@ -12,8 +12,8 @@
 
 extern l_sp_t l_PSPArray[];
 
-extern l_uint32_t l_curTaskID;
-extern l_uint32_t l_nextTaskID;
+extern l_base_t l_curTaskID;
+extern l_base_t l_nextTaskID;
 
 
 typedef struct l_taskControlBlock

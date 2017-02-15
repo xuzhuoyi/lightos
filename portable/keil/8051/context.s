@@ -5,7 +5,7 @@
 ?PR?OS_CPU_GetST0?CONTEXT             SEGMENT CODE
 
 	
-    extrn data(l_port_8051_stk, l_port_8051_stkdep)
+    extrn data(l_port_8051_stk, l_port_8051_stkdep, l_port_8051_curstk)
 	extrn xdata(l_curTaskID, l_PSPArray, l_nextTaskID)
 
     public   OS_CPU_RTOSINT_Handler
@@ -71,28 +71,48 @@ OS_CTX_RESTORE  MACRO
 OS_STACK_RESTORE  MACRO
 
     using   0
-
-restore_stack:
-    INC     R0
-    MOVX    A, @DPTR
-    MOV     @R0, A
-	INC     DPTR
-    DJNZ    R5, restore_stack
-	
-	ENDM
-
-
-    RSEG ?PR?OSStartHighRdy?CONTEXT
-OSStartHighRdy:
-
     MOV     R1, #l_port_8051_stk
 	INC     R1
 	MOV     DPH, @R1
 	INC		R1
 	MOV     DPL, @R1
 
-    MOV     R5, #l_port_8051_stkdep
+    MOV     R5, l_port_8051_stkdep
 	MOV     R0, #OSStkStart
+
+    INC     R0
+    MOVX    A, @DPTR
+    MOV     @R0, A
+	INC     DPTR
+    DJNZ    R5, $ - 4
+	
+	ENDM
+	
+OS_STACK_SAVE  MACRO
+
+    using   0
+    MOV     R1, #l_port_8051_curstk
+	INC     R1
+	MOV     DPH, @R1
+	INC		R1
+	MOV     DPL, @R1
+	MOV     A, SP
+	SUBB    A, #OSStkStart
+	MOV     R5, A
+	MOV     R0, #OSStkStart
+save_stack:	
+	INC     R0
+	MOV     A, R0
+    MOVX    @DPTR, A
+    
+	INC     DPTR
+    DJNZ    R5, save_stack
+	
+	ENDM
+
+
+    RSEG ?PR?OSStartHighRdy?CONTEXT
+OSStartHighRdy:
 	
 	OS_STACK_RESTORE
 	
@@ -106,35 +126,40 @@ OSStartHighRdy:
     RSEG    ?PR?OS_CPU_RTOSINT_Handler?CONTEXT
 OS_CPU_RTOSINT_Handler:
     OS_CTX_SAVE
+	OS_STACK_SAVE
 
-    MOV     R1, #l_curTaskID
-    MOV     R3, #l_PSPArray
-    MOV     R0, #l_nextTaskID
-
-    MOV     ACC, @R1
+    MOV     DPTR, #l_curTaskID
+	MOVX    A, @DPTR
     RL      A
 	RL      A
-    ADD     A, R3
-	PUSH    AR1
-    MOV     R1, ACC
-    MOV     A, SP
-    MOV     @R1, A
-	MOV     A, @R0
-    MOV     R0, A
-	MOV     A, R1
-	MOV     R5, A
-	POP     AR1
-	MOV     A, R0
-    MOV     @R1, A
-    MOV     ACC, R0
+	MOV     R2, A
+	MOV     DPTR, #l_PSPArray
+find_cur_psp:
+    INC     DPTR
+	DJNZ    R2, find_cur_psp
+	
+	MOV     A, SP
+	MOVX    @DPTR, A
+	
+	MOV     DPTR, #l_nextTaskID
+	MOVX    A, @DPTR
+	MOV     R3, A
     RL      A
 	RL      A
-    ADD     A, R3
-    MOV     R2, ACC
-	MOV     A, R5
-	MOV     R1, A
-    MOV     A, @R1
-    MOV     SP, A
+	MOV     R2, A
+	MOV     DPTR, #l_PSPArray
+find_next_psp:
+    INC     DPTR
+	DJNZ    R2, find_next_psp
+	
+	MOVX    A, @DPTR
+	MOV     SP, A
+	
+	MOV     A, R3
+	MOV     DPTR, #l_curTaskID
+	MOVX    @DPTR, A
+	
+	OS_STACK_RESTORE
     OS_CTX_RESTORE
 
     RET
