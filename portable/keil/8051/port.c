@@ -32,6 +32,7 @@ void Timer0Interrupt(void) interrupt 1
     LTaskIncrementTick();
     if(l_nextTaskID != l_curTaskID)
     {
+			  LPort8051PreSwitch(l_nextTaskID);
         OS_CPU_RTOSINT_Handler();
     }
 }

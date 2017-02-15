@@ -130,8 +130,6 @@ OS_CPU_RTOSINT_Handler:
 
     MOV     DPTR, #l_curTaskID
 	MOVX    A, @DPTR
-    RL      A
-	RL      A
 	MOV     R2, A
 	MOV     DPTR, #l_PSPArray
 find_cur_psp:
@@ -144,8 +142,6 @@ find_cur_psp:
 	MOV     DPTR, #l_nextTaskID
 	MOVX    A, @DPTR
 	MOV     R3, A
-    RL      A
-	RL      A
 	MOV     R2, A
 	MOV     DPTR, #l_PSPArray
 find_next_psp:
