@@ -2,14 +2,12 @@
 	
 ?PR?OS_CPU_RTOSINT_Handler?CONTEXT    SEGMENT CODE
 ?PR?OSStartHighRdy?CONTEXT            SEGMENT CODE
-?PR?OS_CPU_GetST0?CONTEXT             SEGMENT CODE
 
 	
     extrn data(l_port_8051_stk, l_port_8051_stkdep, l_port_8051_curstk)
 	extrn xdata(l_curTaskID, l_PSPArray, l_nextTaskID)
 
     public   OS_CPU_RTOSINT_Handler
-    public   OS_CPU_GetST0
     public   OSStartHighRdy
     public   OSStkStart
 		
@@ -161,12 +159,5 @@ found_next_psp:
     OS_CTX_RESTORE
 
     RETI
-
-    RSEG    ?PR?OS_CPU_GetST0?CONTEXT
-OS_CPU_GetST0:
-    using   0
-    PUSH    PSW
-    POP     AR7
-    RET
 	
 	END

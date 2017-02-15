@@ -27,8 +27,8 @@ void LPort8051PreSwitch(l_uint8_t ucTID)
 
 void Timer0Interrupt(void) interrupt 1
 {
-    TH0 = 0x0FC;
-    TL0 = 0x66;
+    TH0 = 0x0EE;
+    TL0 = 0x00;
     LTaskIncrementTick();
     if(l_nextTaskID != l_curTaskID)
     {
