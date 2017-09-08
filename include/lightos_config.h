@@ -1,7 +1,7 @@
 /*
  * lightos_config.h
  *
- *  Created on: 2017Äê1ÔÂ25ÈÕ
+ *  Created on: 2017.1.25
  *      Author: xzy47
  */
 

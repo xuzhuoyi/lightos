@@ -1,7 +1,7 @@
 /*
  * portmacro.h
  *
- *  Created on: 2017Äê1ÔÂ25ÈÕ
+ *  Created on: 2017.1.25
  *      Author: xzy47
  */
 
@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include "stm32f4xx.h"
 #include "core_cm4.h"
+
+#define LPORT_STACK_GROWTH_DIR L_STACK_HIGH_TO_LOW
 
 typedef uint8_t l_uint8_t;
 typedef uint16_t l_uint16_t;
