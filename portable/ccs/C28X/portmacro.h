@@ -1,7 +1,7 @@
 /*
  * portmacro.h
  *
- *  Created on: 2017Äê1ÔÂ25ÈÕ
+ *  Created on: 2017ï¿½ï¿½1ï¿½ï¿½25ï¿½ï¿½
  *      Author: xzy47
  */
 
@@ -23,6 +23,9 @@ typedef int32_t l_int32_t;
 typedef int64_t l_int64_t;
 
 typedef uint32_t l_stack_t;
+typedef l_uint32_t l_handle_t;
+typedef l_uint32_t l_sp_t;
+typedef l_uint32_t l_base_t;
 
 #define LPORT_NVIC_INT_CTRL_REG		( * ( ( volatile uint32_t * ) 0xe000ed04 ) )
 #define LPORT_NVIC_PENDSVSET_BIT	( 1UL << 28UL )

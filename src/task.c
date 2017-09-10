@@ -1,7 +1,7 @@
 /*
  * task.c
  *
- *  Created on: 2017Äê1ÔÂ25ÈÕ
+ *  Created on: 2017ï¿½ï¿½1ï¿½ï¿½25ï¿½ï¿½
  *      Author: xzy47
  */
 
@@ -17,26 +17,30 @@ l_base_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
 l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
-l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_NUMBER] = {0};
+l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
+l_tcb_t *l_curTCB;
+
+extern l_uint8_t l_taskPriorityTable;
+
+extern const l_uint8_t l_priorityBitmap[];
 
 
 l_err_t LTaskIncrementTick(void)
 {
 	static l_uint32_t osTick;
 
-	if(l_TCBArray[l_curTaskID]->ulTimeSlice == 0)
+	l_curTCB = l_TCBArray[l_priorityBitmap[l_taskPriorityTable]];
+
+	if(l_curTCB->ulTimeSlice == 0)
 	{
 		return L_EOK;
 	}
 
-	if(++osTick == l_TCBArray[l_curTaskID]->ulTimeSlice)
+	if(++osTick == l_curTCB->ulTimeSlice)
 	{
 		 osTick = 0;
-		 if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
-		     l_nextTaskID = 0;
-		 while(l_PSPArray[l_nextTaskID] == 0)
-		     if(++l_nextTaskID >= LCONFIG_TASK_MAX_NUMBER)
-		         l_nextTaskID = 0;
+		 l_curTCB = l_curTCB->pxNextTCB;
+		 l_nextTaskID = l_curTCB->ucTID;
 	}
 	return L_EOK;
 }
@@ -46,15 +50,25 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
                     const l_uint32_t    ulTimeSlice,
+                    l_uint8_t           ucPriority,
                     l_handle_t * const  pxHandle)
 {
     l_stack_t *pxTopOfStack;
-	  l_tcb_t *pxNewTCB;
+    l_tcb_t *pxNewTCB;
     if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
     pxNewTCB = malloc(sizeof (l_tcb_t));
-    l_TCBArray[ucTID] = pxNewTCB;
+    if(!l_TCBArray[ucPriority])
+    {
+        l_TCBArray[ucPriority] = pxNewTCB;
+        pxNewTCB->pxNextTCB = pxNewTCB;
+    }
+    else
+    {
+        pxNewTCB->pxNextTCB = l_TCBArray[ucPriority]->pxNextTCB;
+        l_TCBArray[ucPriority]->pxNextTCB = pxNewTCB;
+    }
     pxNewTCB->pxStack = malloc(usStackDepth * sizeof(l_stack_t));
 
 #if LPORT_STACK_GROWTH_DIR < 0
@@ -67,13 +81,15 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 
     l_PSPArray[ucTID] = (l_sp_t)LPortInitStack(pxTopOfStack, pxEntry);
     //l_PSPArray[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
-	//PSP_arrayÖÐ´æ´¢µÄÎªtask0_stackÊý×éµÄÎ²µØÖ·-16*4£¬¼´task0_stack[1023-16]µØÖ·
+	//PSP_arrayï¿½Ð´æ´¢ï¿½ï¿½Îªtask0_stackï¿½ï¿½ï¿½ï¿½ï¿½Î²ï¿½ï¿½Ö·-16*4ï¿½ï¿½ï¿½ï¿½task0_stack[1023-16]ï¿½ï¿½Ö·
 	//HW32_REG((l_PSPArray[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */
-	//task0µÄPC´æ´¢ÔÚtask0_stack[1023-16]µØÖ·  +14<<2ÖÐ£¬¼´task0_stack[1022]ÖÐ
+	//task0ï¿½ï¿½PCï¿½æ´¢ï¿½ï¿½task0_stack[1023-16]ï¿½ï¿½Ö·  +14<<2ï¿½Ð£ï¿½ï¿½ï¿½task0_stack[1022]ï¿½ï¿½
 	//HW32_REG((l_PSPArray[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
     pxNewTCB->usStackDepth = usStackDepth;
-	  pxNewTCB->ucTID = ucTID;
-	  pxNewTCB->ulTimeSlice = ulTimeSlice;
+    pxNewTCB->ucTID = ucTID;
+    pxNewTCB->ulTimeSlice = ulTimeSlice;
+    pxNewTCB->xTaskStatus = L_SREADY;
+
 
 	*pxHandle = (l_int32_t)pxNewTCB;
 	return L_EOK;

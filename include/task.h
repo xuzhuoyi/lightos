@@ -15,13 +15,17 @@ extern l_sp_t l_PSPArray[];
 extern l_base_t l_curTaskID;
 extern l_base_t l_nextTaskID;
 
+typedef l_uint8_t l_status_t;
+
 
 typedef struct l_taskControlBlock
 {
-    l_stack_t   *pxStack;
-    l_uint8_t   ucTID;
-	  l_uint16_t  usStackDepth;
-    l_uint32_t  ulTimeSlice;
+    l_stack_t                   *pxStack;
+    l_uint8_t                   ucTID;
+    l_uint16_t                  usStackDepth;
+    l_uint32_t                  ulTimeSlice;
+    l_status_t                  xTaskStatus;
+    struct l_taskControlBlock   *pxNextTCB;
 } l_tcb_t;
 
 extern l_tcb_t *l_TCBArray[];
@@ -31,6 +35,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     const char * const  pcName,
                     const l_uint16_t    usStackDepth,
                     const l_uint32_t    ulTimeSlice,
+                    l_uint8_t           ucPriority,
                     l_handle_t * const  pxHandle);
 
 void LTaskStartScheduler(void);
