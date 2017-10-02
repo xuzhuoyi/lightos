@@ -15,35 +15,14 @@
 l_base_t l_curTaskID = 0;
 l_base_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
-l_uint8_t curPriority = 0;
 
 l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
 l_tcb_t *l_curTCB[LCONFIG_TASK_MAX_PRIORITY] = {0};
 
+extern l_uint8_t curPriority;
 extern l_uint8_t l_taskPriorityTable;
 
-extern const l_uint8_t l_priorityBitmap[];
-
-
-l_err_t LTaskIncrementTick(void)
-{
-	static l_uint32_t osTick;
-	curPriority = l_priorityBitmap[l_taskPriorityTable];
-
-	if(l_curTCB[curPriority]->ulTimeSlice == 0)
-	{
-		return L_EOK;
-	}
-
-	if(++osTick == l_curTCB[curPriority]->ulTimeSlice)
-	{
-		 osTick = 0;
-		 l_curTCB[curPriority] = l_curTCB[curPriority]->pxNextTCB;
-		 l_nextTaskID = l_curTCB[curPriority]->ucTID;
-	}
-	return L_EOK;
-}
 
 l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
@@ -116,4 +95,9 @@ l_err_t LTaskDelete(l_uint32_t ulHandle)
     free(pxTCB->pxStack);
     free(pxTCB);
     return L_EOK;
+}
+
+void LTaskDelayTick(l_base_t xDelayTick)
+{
+    l_curTCB[curPriority]->xTaskStatus = L_SPENDING;
 }

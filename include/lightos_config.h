@@ -11,7 +11,7 @@
 #define LCONFIG_OS_TIMESLICE 5
 
 #define LCONFIG_TASK_MAX_NUMBER 4
-#define LCONFIG_TASK_MAX_PRIORITY 4
+#define LCONFIG_TASK_MAX_PRIORITY 8
 
 #define LPortPendSVHandler PendSV_Handler
 

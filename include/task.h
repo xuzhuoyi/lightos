@@ -34,7 +34,7 @@ typedef struct l_taskControlBlock
 } l_tcb_t;
 
 extern l_tcb_t *l_TCBArray[];
-l_err_t LTaskIncrementTick(void);
+
 l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,

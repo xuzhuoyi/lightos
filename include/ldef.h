@@ -12,7 +12,8 @@
 
 typedef void (*LTaskFunction_t)( void * );
 
-typedef l_uint8_t l_err_t;
+typedef l_uint8_t   l_err_t;
+typedef l_uint32_t  l_tick_t;
 
 #define L_EOK                   0
 #define L_ERROR                 1

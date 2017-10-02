@@ -12,7 +12,7 @@
 
 void LPortSysTickHandler(void)
 {
-	LTaskIncrementTick();
+    LTickIncrement();
 	if(l_nextTaskID != l_curTaskID)
 	    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
