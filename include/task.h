@@ -17,6 +17,11 @@ extern l_base_t l_nextTaskID;
 
 typedef l_uint8_t l_status_t;
 
+typedef enum l_tcstatus
+{
+    L_TCSUSPENDED = -1, L_TCSREADY = 1
+} l_tcstatus_t;
+
 
 typedef struct l_taskControlBlock
 {
@@ -36,6 +41,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     const l_uint16_t    usStackDepth,
                     const l_uint32_t    ulTimeSlice,
                     l_uint8_t           ucPriority,
+                    l_tcstatus_t        exTCStatus,
                     l_handle_t * const  pxHandle);
 
 void LTaskStartScheduler(void);

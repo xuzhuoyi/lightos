@@ -1,7 +1,7 @@
 /*
  * task.c
  *
- *  Created on: 2017��1��25��
+ *  Created on: 2017.1.25
  *      Author: xzy47
  */
 
@@ -51,6 +51,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     const l_uint16_t    usStackDepth,
                     const l_uint32_t    ulTimeSlice,
                     l_uint8_t           ucPriority,
+                    l_tcstatus_t        exTCStatus,
                     l_handle_t * const  pxHandle)
 {
     l_stack_t *pxTopOfStack;
@@ -82,14 +83,16 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 
     l_PSPArray[ucTID] = (l_sp_t)LPortInitStack(pxTopOfStack, pxEntry);
     //l_PSPArray[ucTID] = ((l_uint32_t) pxNewTCB->pxStack) + usStackDepth * sizeof(l_stack_t) - 16*4;
-	//PSP_array�д洢��Ϊtask0_stack�����β��ַ-16*4����task0_stack[1023-16]��ַ
+
 	//HW32_REG((l_PSPArray[ucTID] + (14<<2))) = (l_stack_t) pxEntry; /* PC */
-	//task0��PC�洢��task0_stack[1023-16]��ַ  +14<<2�У���task0_stack[1022]��
+
 	//HW32_REG((l_PSPArray[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
     pxNewTCB->usStackDepth = usStackDepth;
     pxNewTCB->ucTID = ucTID;
     pxNewTCB->ulTimeSlice = ulTimeSlice;
-    pxNewTCB->xTaskStatus = L_SREADY;
+    pxNewTCB->xTaskStatus = exTCStatus;
+    if(exTCStatus == L_TCSREADY)
+        l_taskPriorityTable |= 1 << ucPriority;
 
 
 	*pxHandle = (l_int32_t)pxNewTCB;
