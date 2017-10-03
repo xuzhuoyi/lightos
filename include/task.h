@@ -30,10 +30,11 @@ typedef struct l_taskControlBlock
     l_uint16_t                  usStackDepth;
     l_uint32_t                  ulTimeSlice;
     l_status_t                  xTaskStatus;
+    l_tick_t                    xReadyTick;
     struct l_taskControlBlock   *pxNextTCB;
 } l_tcb_t;
 
-extern l_tcb_t *l_TCBArray[];
+extern l_list_t l_TCBArray[];
 
 l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,

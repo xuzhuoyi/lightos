@@ -17,8 +17,8 @@ l_base_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
 
 l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
-l_tcb_t *l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
 l_tcb_t *l_curTCB[LCONFIG_TASK_MAX_PRIORITY] = {0};
+l_list_t l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
 
 extern l_uint8_t curPriority;
 extern l_uint8_t l_taskPriorityTable;
@@ -33,23 +33,20 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
                     l_tcstatus_t        exTCStatus,
                     l_handle_t * const  pxHandle)
 {
+    l_item_t *xItem;
     l_stack_t *pxTopOfStack;
     l_tcb_t *pxNewTCB;
+
     if(ucTID >= LCONFIG_TASK_MAX_NUMBER)
         return L_ETASK_NUM_OVERFLOW;
     l_taskNumber++;
     pxNewTCB = malloc(sizeof (l_tcb_t));
-    if(!l_TCBArray[ucPriority])
-    {
-        l_TCBArray[ucPriority] = pxNewTCB;
-        pxNewTCB->pxNextTCB = pxNewTCB;
-        l_curTCB[ucPriority] = pxNewTCB;
-    }
-    else
-    {
-        pxNewTCB->pxNextTCB = l_TCBArray[ucPriority]->pxNextTCB;
-        l_TCBArray[ucPriority]->pxNextTCB = pxNewTCB;
-    }
+
+    xItem = malloc(sizeof(l_item_t));
+    xItem->pvItem = pxNewTCB;
+
+    LListInsertEnd(&l_TCBArray[ucPriority], xItem);
+
     pxNewTCB->pxStack = malloc(usStackDepth * sizeof(l_stack_t));
 
 #if LPORT_STACK_GROWTH_DIR < 0
@@ -100,4 +97,5 @@ l_err_t LTaskDelete(l_uint32_t ulHandle)
 void LTaskDelayTick(l_base_t xDelayTick)
 {
     l_curTCB[curPriority]->xTaskStatus = L_SPENDING;
+    l_curTCB[curPriority]->xReadyTick = LTickGet() + xDelayTick;
 }

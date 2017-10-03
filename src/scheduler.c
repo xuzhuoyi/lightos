@@ -7,6 +7,8 @@
 
 #include "task.h"
 
+//l_list_t l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
+
 l_uint8_t l_curTaskPriority = 0;
 
 l_uint8_t l_taskPriorityTable = 0;
@@ -30,8 +32,3 @@ const l_uint8_t l_priorityBitmap[] =
     /* E0 */ 5, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
     /* F0 */ 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0
 };
-
-l_tcb_t * l_scheduler_start(void)
-{
-
-}

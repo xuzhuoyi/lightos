@@ -27,4 +27,17 @@ typedef l_uint32_t  l_tick_t;
 #define L_SRUNNING              2
 #define L_SPENDING              0
 
+typedef struct l_item
+{
+    void * pvItem;
+    struct l_item *pxPrevious;
+    struct l_item *pxNext;
+} l_item_t;
+
+typedef struct l_list
+{
+    uint8_t ucNumberOfItems;
+    l_item_t * pxItem;
+} l_list_t;
+
 #endif /* INCLUDE_LDEF_H_ */
