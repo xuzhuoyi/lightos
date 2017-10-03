@@ -36,6 +36,10 @@ typedef struct l_taskControlBlock
 
 extern l_list_t l_TCBArray[];
 
+extern l_uint8_t curPriority;
+
+extern l_uint8_t l_taskPriorityTable;
+
 l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
                     const char * const  pcName,

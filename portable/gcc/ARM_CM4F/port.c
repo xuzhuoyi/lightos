@@ -27,6 +27,8 @@ void LPortInitScheduler(void)
 
 	__asm volatile ("isb 0xF":::"memory");
 
+	curPriority = l_priorityBitmap[l_taskPriorityTable];
+
 	p_funcFirst = (void (*)())*(uint32_t *)(l_PSPArray[l_nextTaskID] + 56);
 	p_funcFirst();
 

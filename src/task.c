@@ -20,9 +20,6 @@ l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 l_tcb_t *l_curTCB[LCONFIG_TASK_MAX_PRIORITY] = {0};
 l_list_t l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
 
-extern l_uint8_t curPriority;
-extern l_uint8_t l_taskPriorityTable;
-
 
 l_err_t LTaskCreate(l_uint8_t           ucTID,
                     LTaskFunction_t     pxEntry,
@@ -96,6 +93,10 @@ l_err_t LTaskDelete(l_uint32_t ulHandle)
 
 void LTaskDelayTick(l_base_t xDelayTick)
 {
-    l_curTCB[curPriority]->xTaskStatus = L_SPENDING;
-    l_curTCB[curPriority]->xReadyTick = LTickGet() + xDelayTick;
+    ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xTaskStatus = L_SPENDING;
+    ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xReadyTick = LTickGet() + xDelayTick;
+    LListDeleteCur(&l_TCBArray[curPriority]);
+    if(l_TCBArray[curPriority].ucNumberOfItems == 0)
+        l_taskPriorityTable &= ~(1 << curPriority);
+    LSchedulerRun();
 }

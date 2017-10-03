@@ -25,3 +25,11 @@ void LListInsertEnd(l_list_t *pxList, l_item_t *pxInsItem)
     pxList->ucNumberOfItems++;
 }
 
+void LListDeleteCur(l_list_t *pxList)
+{
+    pxList->pxItem->pxPrevious->pxNext = pxList->pxItem->pxNext;
+    pxList->pxItem->pxNext->pxPrevious = pxList->pxItem->pxPrevious;
+    pxList->pxItem = pxList->pxItem->pxNext;
+    pxList->ucNumberOfItems--;
+}
+
