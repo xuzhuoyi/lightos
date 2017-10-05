@@ -98,5 +98,5 @@ void LTaskDelayTick(l_base_t xDelayTick)
     LListDeleteCur(&l_TCBArray[curPriority]);
     if(l_TCBArray[curPriority].ucNumberOfItems == 0)
         l_taskPriorityTable &= ~(1 << curPriority);
-    LSchedulerRun();
+    LSchedulerRun(L_SCHEDULER_NEXT);
 }

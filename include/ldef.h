@@ -27,6 +27,11 @@ typedef l_uint32_t  l_tick_t;
 #define L_SRUNNING              2
 #define L_SPENDING              0
 
+typedef enum l_scheduler_message
+{
+    L_SCHEDULER_NORMAL, L_SCHEDULER_NEXT
+} l_schmsg_t;
+
 typedef struct l_item
 {
     void * pvItem;

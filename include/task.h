@@ -29,6 +29,7 @@ typedef struct l_taskControlBlock
     l_uint8_t                   ucTID;
     l_uint16_t                  usStackDepth;
     l_uint32_t                  ulTimeSlice;
+    l_uint32_t                  ulSliceTick;
     l_status_t                  xTaskStatus;
     l_tick_t                    xReadyTick;
     struct l_taskControlBlock   *pxNextTCB;

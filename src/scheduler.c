@@ -34,27 +34,30 @@ l_uint8_t l_curTaskPriority = 0;
 l_uint8_t l_taskPriorityTable = 0;
 l_uint8_t curPriority = 0;
 
-void LSchedulerRun()
+void LSchedulerRun(l_schmsg_t eSchMsg)
 {
-    static l_uint32_t osTick;
-
+    //static l_uint32_t osTick;
     curPriority = l_priorityBitmap[l_taskPriorityTable];
-
-    l_item_t *curItem = l_TCBArray[curPriority].pxItem;
-
-    if(((l_tcb_t *)curItem->pvItem)->ulTimeSlice == 0)
+    l_tcb_t *curTCB = l_TCBArray[curPriority].pxItem->pvItem;
+    if(eSchMsg == L_SCHEDULER_NORMAL)
     {
-        return;
-    }
 
-    if(++osTick == ((l_tcb_t *)curItem->pvItem)->ulTimeSlice)
-    {
-         osTick = 0;
-         l_TCBArray[curPriority].pxItem = curItem->pxNext;
-         l_nextTaskID = ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->ucTID;
+        if(curTCB->ulTimeSlice == 0)
+        {
+            return;
+        }
+
+        if(++curTCB->ulSliceTick == curTCB->ulTimeSlice)
+        {
+            curTCB->ulSliceTick = 0;
+            l_TCBArray[curPriority].pxItem = l_TCBArray[curPriority].pxItem->pxNext;
+            l_nextTaskID = ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->ucTID;
+        }
     }
+    else
+        l_nextTaskID = curTCB->ucTID;
 
     if(l_nextTaskID != l_curTaskID)
-            LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
+        LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
 
