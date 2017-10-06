@@ -15,10 +15,12 @@
 l_base_t l_curTaskID = 0;
 l_base_t l_nextTaskID = 0;
 l_uint8_t l_taskNumber = 0;
+l_tick_t l_nextWeakTick = -1;
 
 l_sp_t l_PSPArray[LCONFIG_TASK_MAX_NUMBER] = {0};
 l_tcb_t *l_curTCB[LCONFIG_TASK_MAX_PRIORITY] = {0};
 l_list_t l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
+l_list_t l_delayTaskList;
 
 
 l_err_t LTaskCreate(l_uint8_t           ucTID,
@@ -62,8 +64,13 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 	//HW32_REG((l_PSPArray[ucTID] + (15<<2))) = 0x01000000;            /* xPSR */
     pxNewTCB->usStackDepth = usStackDepth;
     pxNewTCB->ucTID = ucTID;
+
     pxNewTCB->ulTimeSlice = ulTimeSlice;
+    pxNewTCB->ulSliceTick = 0;
+
     pxNewTCB->xTaskStatus = exTCStatus;
+
+    pxNewTCB->ucPriority = ucPriority;
     if(exTCStatus == L_TCSREADY)
         l_taskPriorityTable |= 1 << ucPriority;
 
@@ -91,12 +98,22 @@ l_err_t LTaskDelete(l_uint32_t ulHandle)
     return L_EOK;
 }
 
-void LTaskDelayTick(l_base_t xDelayTick)
+void LTaskDelayTick(l_tick_t xDelayTick)
 {
+    l_item_t * pxDelayItem = malloc(sizeof(l_item_t));
+    pxDelayItem->pvItem = l_TCBArray[curPriority].pxItem->pvItem;
+
+    l_tick_t weakTick = LTickGet() + xDelayTick;
     ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xTaskStatus = L_SPENDING;
-    ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xReadyTick = LTickGet() + xDelayTick;
+
+    ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xReadyTick = weakTick;
+    if(l_nextWeakTick > weakTick)
+        l_nextWeakTick = weakTick;
+
+    LListInsertEnd(&l_delayTaskList, pxDelayItem);
     LListDeleteCur(&l_TCBArray[curPriority]);
     if(l_TCBArray[curPriority].ucNumberOfItems == 0)
         l_taskPriorityTable &= ~(1 << curPriority);
+
     LSchedulerRun(L_SCHEDULER_NEXT);
 }

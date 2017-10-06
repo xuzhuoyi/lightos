@@ -20,4 +20,6 @@ void LTickSet(l_tick_t tick);
 void LListInsertEnd(l_list_t *pxList, l_item_t *pxInsItem);
 void LListDeleteCur(l_list_t *pxList);
 
+void LSchedulerRun(l_schmsg_t eSchMsg);
+
 #endif /* INCLUDE_LIGHTOS_H_ */

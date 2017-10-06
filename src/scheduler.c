@@ -61,3 +61,8 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
         __asm("svc 1");
 }
 
+void LSchedulerInit()
+{
+
+}
+

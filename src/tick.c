@@ -11,6 +11,8 @@
 extern l_base_t l_nextTaskID;
 extern const l_uint8_t l_priorityBitmap[];
 extern l_uint8_t l_taskPriorityTable;
+extern l_tick_t l_nextWeakTick;
+extern l_list_t l_delayTaskList;
 
 static l_tick_t l_tick = 0;
 
@@ -28,7 +30,28 @@ void LTickSet(l_tick_t tick)
 
 l_err_t LTickIncrement(void)
 {
-    LSchedulerRun();
+    l_uint32_t i;
+    l_tick++;
+    if(l_nextWeakTick <= l_tick)
+    {
+        l_nextWeakTick = -1;
+        for(i = 0; i < l_delayTaskList.ucNumberOfItems; i++)
+        {
+            if(((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick <= l_tick)
+            {
+                ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xTaskStatus = L_SREADY;
+                LListDeleteCur(&l_delayTaskList);
+                LListInsertEnd(&l_TCBArray[((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority], l_delayTaskList.pxItem);
+                l_taskPriorityTable |= 1 << ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority;
+            }
+            else
+                if(l_nextWeakTick > ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick)
+                    l_nextWeakTick = ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick;
+
+            l_delayTaskList.pxItem = l_delayTaskList.pxItem->pxNext;
+        }
+    }
+    LSchedulerRun(L_SCHEDULER_NORMAL);
     return L_EOK;
 }
 
