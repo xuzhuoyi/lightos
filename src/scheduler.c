@@ -58,6 +58,6 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
         l_nextTaskID = curTCB->ucTID;
 
     if(l_nextTaskID != l_curTaskID)
-        LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
+        __asm("svc 1");
 }
 

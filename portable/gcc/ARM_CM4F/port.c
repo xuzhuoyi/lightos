@@ -20,7 +20,7 @@ void LPortSysTickHandler(void)
 void LPortInitScheduler(void)
 {
 	void (*p_funcFirst)();
-	
+
 	__asm volatile ("MSR psp, %0\n" : : "r" ((l_PSPArray[l_curTaskID] + 16*4)) :"sp" );
 	LTaskStartScheduler();
 	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
@@ -65,4 +65,9 @@ l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
                                                                 /* Return pointer to next free location.                */
     return ((l_stack_t *)p_stk32);
 
+}
+
+void SVC_Handler(void)
+{
+    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
