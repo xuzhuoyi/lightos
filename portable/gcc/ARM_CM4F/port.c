@@ -13,8 +13,8 @@
 void LPortSysTickHandler(void)
 {
     LTickIncrement();
-	if(l_nextTaskID != l_curTaskID)
-	    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
+//	if(l_nextTaskID != l_curTaskID)
+//	    LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
 
 void LPortInitScheduler(void)
