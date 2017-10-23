@@ -23,7 +23,12 @@ void LPortInitScheduler(void)
 
 	__asm volatile ("MSR psp, %0\n" : : "r" ((l_PSPArray[l_curTaskID] + 16*4)) :"sp" );
 	LTaskStartScheduler();
+
+#ifdef LCONFIG_TASK_PRIVILEGE_LEVELS
+	__asm volatile ("MSR control, %0" : : "r" (0x2) : "memory");
+#else
 	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
+#endif
 
 	__asm volatile ("isb 0xF":::"memory");
 
