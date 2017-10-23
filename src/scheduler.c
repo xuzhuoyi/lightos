@@ -7,7 +7,9 @@
 
 #include "task.h"
 
-//l_list_t l_TCBArray[LCONFIG_TASK_MAX_PRIORITY] = {0};
+l_handle_t l_idleTaskHandle;
+
+void LSchedulerIdleTask();
 
 const l_uint8_t l_priorityBitmap[] =
 {
@@ -61,8 +63,22 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
         __asm("svc 1");
 }
 
-void LSchedulerInit()
+void LSchedulerStart()
 {
+	LTaskCreate(0,
+			    LSchedulerIdleTask,
+	            (signed char const*)"IDLE",
+				LCONFIG_IDLE_STACK_DEPTH,
+				0,
+				LCONFIG_TASK_MAX_PRIORITY - 1,
+	            L_TCSREADY,
+				l_idleTaskHandle);
 
+	LPortInitScheduler();
+}
+
+void LSchedulerIdleTask()
+{
+	for(;;);
 }
 
