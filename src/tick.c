@@ -31,18 +31,20 @@ void LTickSet(l_tick_t tick)
 l_err_t LTickIncrement(void)
 {
     l_uint32_t i;
+    l_uint8_t ucNumOfItems = l_delayTaskList.ucNumberOfItems;
     l_tick++;
+
     if(l_nextWeakTick <= l_tick)
     {
         l_nextWeakTick = -1;
-        for(i = 0; i < l_delayTaskList.ucNumberOfItems; i++)
+        for(i = 0; i < ucNumOfItems; i++)
         {
             if(((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick <= l_tick)
             {
                 ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xTaskStatus = L_SREADY;
-                LListDeleteCur(&l_delayTaskList);
                 LListInsertEnd(&l_TCBArray[((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority], l_delayTaskList.pxItem);
                 l_taskPriorityTable |= 1 << ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority;
+                LListDeleteCur(&l_delayTaskList);
             }
             else
                 if(l_nextWeakTick > ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick)
@@ -56,4 +58,3 @@ l_err_t LTickIncrement(void)
 }
 
 /*l_tick_t LTickFromMillisecond(l_uint32_t ms)*/
-

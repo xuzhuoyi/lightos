@@ -101,6 +101,7 @@ l_err_t LTaskDelete(l_uint32_t ulHandle)
 void LTaskDelayTick(l_tick_t xDelayTick)
 {
     l_item_t * pxDelayItem = malloc(sizeof(l_item_t));
+    LPORT_SYSTICK_DISABLE;
     pxDelayItem->pvItem = l_TCBArray[curPriority].pxItem->pvItem;
 
     l_tick_t weakTick = LTickGet() + xDelayTick;
@@ -114,6 +115,7 @@ void LTaskDelayTick(l_tick_t xDelayTick)
     LListDeleteCur(&l_TCBArray[curPriority]);
     if(l_TCBArray[curPriority].ucNumberOfItems == 0)
         l_taskPriorityTable &= ~(1 << curPriority);
+    LPORT_SYSTICK_ENABLE;
 
     LSchedulerRun(L_SCHEDULER_NEXT);
 }
