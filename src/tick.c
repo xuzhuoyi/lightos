@@ -32,6 +32,7 @@ l_err_t LTickIncrement(void)
 {
     l_uint32_t i;
     l_uint8_t ucNumOfItems = l_delayTaskList.ucNumberOfItems;
+    l_item_t * pxDelayItem;
     l_tick++;
 
     if(l_nextWeakTick <= l_tick)
@@ -42,15 +43,22 @@ l_err_t LTickIncrement(void)
             if(((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick <= l_tick)
             {
                 ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xTaskStatus = L_SREADY;
-                LListInsertEnd(&l_TCBArray[((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority], l_delayTaskList.pxItem);
+                pxDelayItem = malloc(sizeof(l_item_t));
+                pxDelayItem->pvItem = l_delayTaskList.pxItem->pvItem;
+                LListInsertEnd(&l_TCBArray[((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority], pxDelayItem);
                 l_taskPriorityTable |= 1 << ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority;
+                pxDelayItem = l_delayTaskList.pxItem;
                 LListDeleteCur(&l_delayTaskList);
+                free(pxDelayItem);
             }
             else
-                if(l_nextWeakTick > ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick)
-                    l_nextWeakTick = ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick;
+            {
+            	l_delayTaskList.pxItem = l_delayTaskList.pxItem->pxNext;
+            	if(l_nextWeakTick > ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick)
+            	    l_nextWeakTick = ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick;
+            }
 
-            l_delayTaskList.pxItem = l_delayTaskList.pxItem->pxNext;
+
         }
     }
     LSchedulerRun(L_SCHEDULER_NORMAL);

@@ -112,7 +112,11 @@ void LTaskDelayTick(l_tick_t xDelayTick)
         l_nextWeakTick = weakTick;
 
     LListInsertEnd(&l_delayTaskList, pxDelayItem);
+
+    pxDelayItem = l_TCBArray[curPriority].pxItem;
     LListDeleteCur(&l_TCBArray[curPriority]);
+    free(pxDelayItem);
+
     if(l_TCBArray[curPriority].ucNumberOfItems == 0)
         l_taskPriorityTable &= ~(1 << curPriority);
     LPORT_SYSTICK_ENABLE;
