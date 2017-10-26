@@ -46,7 +46,7 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
 
         if(curTCB->ulTimeSlice == 0)
         {
-            return;
+        	l_nextTaskID = curTCB->ucTID;
         }
 
         if(++curTCB->ulSliceTick == curTCB->ulTimeSlice)
