@@ -7,7 +7,7 @@
 
 #include "task.h"
 
-l_handle_t l_idleTaskHandle;
+l_handle_t *l_idleTaskHandle;
 
 void LSchedulerIdleTask();
 

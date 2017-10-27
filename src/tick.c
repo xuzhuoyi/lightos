@@ -43,7 +43,7 @@ l_err_t LTickIncrement(void)
             if(((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xReadyTick <= l_tick)
             {
                 ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->xTaskStatus = L_SREADY;
-                pxDelayItem = malloc(sizeof(l_item_t));
+                pxDelayItem = (l_item_t *)malloc(sizeof(l_item_t));
                 pxDelayItem->pvItem = l_delayTaskList.pxItem->pvItem;
                 LListInsertEnd(&l_TCBArray[((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority], pxDelayItem);
                 l_taskPriorityTable |= 1 << ((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucPriority;
