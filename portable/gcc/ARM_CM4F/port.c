@@ -20,34 +20,17 @@ void LPortSysTickHandler(void)
 void LPortInitScheduler(void)
 {
 	void (*p_funcFirst)();
-	l_uint32_t curPSP;
 
-#if defined(__CC_ARM)
-	curPSP = l_PSPArray[l_curTaskID] + 16*4;
-	__asm
-	{
-		MSR psp, curPSP
-		
-#ifdef LCONFIG_TASK_PRIVILEGE_LEVELS
-	  MSR control, 0x2 
-#else
-	  MSR control, 0x3
-#endif
-		
-		isb 0xF
-	}
-#elif defined(__GNUC__)
-	__asm volatile ("MSR psp, %0\n" : : "r" ((l_PSPArray[l_curTaskID] + 16*4)) :"sp" );
+	__set_PSP(l_PSPArray[l_curTaskID] + 16*4);
 	
 #ifdef LCONFIG_TASK_PRIVILEGE_LEVELS
-	__asm volatile ("MSR control, %0" : : "r" (0x2) : "memory");
+	__set_CONTROL(0x2);
 #else
-	__asm volatile ("MSR control, %0" : : "r" (0x3) : "memory");
+	__set_CONTROL(0x3);
 #endif
 	
-	__asm volatile ("isb 0xF":::"memory");
-#endif
-	
+	__ISB();
+
   LTaskStartScheduler();
 	curPriority = l_priorityBitmap[l_taskPriorityTable];
 
