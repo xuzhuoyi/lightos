@@ -53,8 +53,12 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
 
 void LTaskStartScheduler(void);
 void LTaskStopScheduler(void);
+
 l_err_t LTaskDelete(l_uint32_t ulHandle);
+
 void LTaskDelayTick(l_tick_t xDelayTick);
+
 void LTaskSuspendSelf(void);
+void LTaskReady(l_handle_t ulHandle);
 
 #endif /* INCLUDE_TASK_H_ */

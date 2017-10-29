@@ -137,5 +137,13 @@ void LTaskSuspendSelf()
 	        l_taskPriorityTable &= ~(1 << curPriority);
 
 	LSchedulerRun(L_SCHEDULER_NEXT);
+}
 
+void LTaskReady(l_handle_t ulHandle)
+{
+	l_item_t * pxReadyItem = (l_item_t *)malloc(sizeof(l_item_t));
+	((l_tcb_t *)ulHandle)->xTaskStatus = L_SREADY;
+	pxReadyItem->pvItem = ulHandle;
+	LListInsertEnd(&l_TCBArray[((l_tcb_t *)ulHandle)->ucPriority], pxReadyItem);
+	l_taskPriorityTable |= 1 << ((l_tcb_t *)ulHandle)->ucPriority;
 }
