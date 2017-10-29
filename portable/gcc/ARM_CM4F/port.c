@@ -76,3 +76,21 @@ void SVC_Handler(void)
 {
     LPORT_NVIC_INT_CTRL_REG = LPORT_NVIC_PENDSVSET_BIT;
 }
+
+#if defined(__GNUC__)
+caddr_t _sbrk(int incr)
+{
+	extern char end asm("end");
+	static char *heap_end;
+	char *prev_heap_end;
+
+	if (heap_end == 0)
+		heap_end = &end;
+
+	prev_heap_end = heap_end;
+
+	heap_end += incr;
+
+	return (caddr_t) prev_heap_end;
+}
+#endif

@@ -123,3 +123,19 @@ void LTaskDelayTick(l_tick_t xDelayTick)
 
     LSchedulerRun(L_SCHEDULER_NEXT);
 }
+
+void LTaskSuspendSelf()
+{
+	l_item_t * pxSuspendItem = l_TCBArray[curPriority].pxItem;
+
+	((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->xTaskStatus = L_SUSPENDED;
+
+	LListDeleteCur(&l_TCBArray[curPriority]);
+	free(pxSuspendItem);
+
+	if(l_TCBArray[curPriority].ucNumberOfItems == 0)
+	        l_taskPriorityTable &= ~(1 << curPriority);
+
+	LSchedulerRun(L_SCHEDULER_NEXT);
+
+}

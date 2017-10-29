@@ -8,6 +8,7 @@
 #include "task.h"
 
 l_handle_t *l_idleTaskHandle;
+extern l_tick_t taskIdleTick;
 
 void LSchedulerIdleTask();
 
@@ -55,6 +56,9 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
             l_TCBArray[curPriority].pxItem = l_TCBArray[curPriority].pxItem->pxNext;
             l_nextTaskID = ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->ucTID;
         }
+
+        if(l_nextTaskID == 0)
+        	    taskIdleTick++;
     }
     else
         l_nextTaskID = curTCB->ucTID;
