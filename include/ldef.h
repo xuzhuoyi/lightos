@@ -41,7 +41,7 @@ typedef struct l_item
 
 typedef struct l_list
 {
-    uint8_t ucNumberOfItems;
+    l_uint8_t ucNumberOfItems;
     l_item_t * pxItem;
 } l_list_t;
 

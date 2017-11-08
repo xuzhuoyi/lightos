@@ -74,7 +74,7 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
         l_nextTaskID = curTCB->ucTID;
 
     if(l_nextTaskID != l_curTaskID)
-        __asm("svc 1");
+        LPORT_CONTEXT_SWITCH;
 }
 
 void LSchedulerStart()

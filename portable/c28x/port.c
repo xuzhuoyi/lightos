@@ -12,12 +12,7 @@
 interrupt void BSP_OS_TIMER2_TickHandler (void)
 {
     BSP_OS_TIMER2_TCR |= BSP_OS_TIMER2_TCR_TIF;
-    LTaskIncrementTick();
-    if(l_nextTaskID != l_curTaskID)
-    {
-        IER = IER | (1u << (14-1));
-        asm(" TRAP #16");
-    }
+    LTickIncrement();
 }
 
 void LPortInitScheduler(void)

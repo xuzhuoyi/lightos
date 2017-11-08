@@ -35,4 +35,5 @@ typedef l_uint32_t l_base_t;
 #define LPORT_SYSTICK_ENABLE        SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk
 #define LPORT_SYSTICK_DISABLE       SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk
 
+#define LPORT_CONTEXT_SWITCH __asm("svc 1")
 #endif /* PORTABLE_PORTMACRO_H_ */
