@@ -7,6 +7,7 @@
 
 #include "lightos.h"
 #include "task.h"
+#include <stdlib.h>
 
 extern l_base_t l_nextTaskID;
 extern const l_uint8_t l_priorityBitmap[];

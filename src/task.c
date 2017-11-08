@@ -74,8 +74,7 @@ l_err_t LTaskCreate(l_uint8_t           ucTID,
     if(exTCStatus == L_TCSREADY)
         l_taskPriorityTable |= 1 << ucPriority;
 
-
-	*pxHandle = (l_int32_t)pxNewTCB;
+    *pxHandle = (l_int32_t)pxNewTCB;
 	return L_EOK;
 }
 
@@ -143,7 +142,7 @@ void LTaskReady(l_handle_t ulHandle)
 {
 	l_item_t * pxReadyItem = (l_item_t *)malloc(sizeof(l_item_t));
 	((l_tcb_t *)ulHandle)->xTaskStatus = L_SREADY;
-	pxReadyItem->pvItem = ulHandle;
+	pxReadyItem->pvItem = (void *)ulHandle;
 	LListInsertEnd(&l_TCBArray[((l_tcb_t *)ulHandle)->ucPriority], pxReadyItem);
 	l_taskPriorityTable |= 1 << ((l_tcb_t *)ulHandle)->ucPriority;
 }
