@@ -8,9 +8,16 @@
 #include "task.h"
 
 l_handle_t *l_idleTaskHandle;
-extern l_tick_t taskIdleTick;
+
+#if defined(LCONFIG_CPU_MEASURE_ENABLE)
+l_handle_t *l_measureTaskHandle;
+
+l_uint16_t taskIdleTick;
+static l_uint16_t l_idleTick = 0;
+#endif
 
 void LSchedulerIdleTask();
+void LSchedulerMeasureTask();
 
 const l_uint8_t l_priorityBitmap[] =
 {
@@ -57,8 +64,11 @@ void LSchedulerRun(l_schmsg_t eSchMsg)
             l_nextTaskID = ((l_tcb_t *)l_TCBArray[curPriority].pxItem->pvItem)->ucTID;
         }
 
+#if defined(LCONFIG_CPU_MEASURE_ENABLE)
         if(l_nextTaskID == 0)
         	    taskIdleTick++;
+#endif
+
     }
     else
         l_nextTaskID = curTCB->ucTID;
@@ -85,4 +95,33 @@ void LSchedulerIdleTask()
 {
 	for(;;);
 }
+
+#if defined(LCONFIG_CPU_MEASURE_ENABLE)
+void LSchedulerCPUMeasureInit()
+{
+	LTaskCreate(LCONFIG_TASK_MAX_NUMBER - 1,
+		  		LSchedulerMeasureTask,
+		        (signed char const*)"MEASURE",
+		        128,
+		  	    0,
+		        0,
+		        L_TCSREADY,
+		        l_measureTaskHandle);
+}
+
+void LSchedulerMeasureTask()
+{
+	while(1)
+	{
+	    taskIdleTick = 0;
+	    LTaskDelayTick(1000);
+	    l_idleTick = taskIdleTick;
+	}
+}
+
+l_uint16_t LSchedulerIdleTickGet()
+{
+	return l_idleTick;
+}
+#endif
 

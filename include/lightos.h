@@ -23,4 +23,9 @@ void LListDeleteCur(l_list_t *pxList);
 void LSchedulerRun(l_schmsg_t eSchMsg);
 void LSchedulerStart(void);
 
+#if defined(LCONFIG_CPU_MEASURE_ENABLE)
+void LSchedulerCPUMeasureInit(void);
+l_uint16_t LSchedulerIdleTickGet(void);
+#endif
+
 #endif /* INCLUDE_LIGHTOS_H_ */
