@@ -35,7 +35,7 @@ void CPU_IntSrcEn (l_uint16_t bit)
 
 l_stack_t *LPortInitStack(l_stack_t *pxTopOfStack, LTaskFunction_t pxEntry)
 {
-    l_stack_t  *p_stk;
+    l_uint16_t  *p_stk;
     l_uint32_t  *p_stk32;
 
                                                                     /* Prevent compiler warnings.                           */

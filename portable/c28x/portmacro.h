@@ -74,7 +74,7 @@ extern  cregister  volatile  unsigned  int  IER;
 #define  CPU_INT_INT2                                      2u
 #define  CPU_INT_INT1                                      1u
 
-#define LPORT_CONTEXT_SWITCH    IER = IER | (1u << (14-1));asm(" TRAP #16")
+#define LPORT_CONTEXT_SWITCH    {IER = IER | (1u << (14-1));asm(" TRAP #16");}
 
 void CPU_IntSrcEn(l_uint16_t bit);
 l_uint16_t     OS_CPU_GetST0         (void);
