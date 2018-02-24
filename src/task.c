@@ -91,9 +91,39 @@ void LTaskStopScheduler(void)
 l_err_t LTaskDelete(l_uint32_t ulHandle)
 {
     l_tcb_t * pxTCB = (l_tcb_t *) ulHandle;
+    l_uint8_t i;
+
+    LPORT_SYSTICK_DISABLE;
+
     l_PSPArray[pxTCB->ucTID] = 0;
+
+    for(i = 0; i < l_TCBArray[pxTCB->ucPriority].ucNumberOfItems; i++)
+    {
+        if(((l_tcb_t *)l_TCBArray[pxTCB->ucPriority].pxItem->pvItem)->ucTID == pxTCB->ucTID)
+        {
+            LListDeleteCur(&l_TCBArray[pxTCB->ucPriority]);
+            break;
+        }
+        else
+            l_TCBArray[pxTCB->ucPriority].pxItem = l_TCBArray[pxTCB->ucPriority].pxItem->pxNext;
+    }
+
+    for(i = 0; i < l_delayTaskList.ucNumberOfItems; i++)
+    {
+        if(((l_tcb_t *)l_delayTaskList.pxItem->pvItem)->ucTID == pxTCB->ucTID)
+        {
+            LListDeleteCur(&l_delayTaskList);
+            break;
+        }
+        else
+            l_delayTaskList.pxItem = l_delayTaskList.pxItem->pxNext;
+    }
+
     free(pxTCB->pxStack);
     free(pxTCB);
+
+    LPORT_SYSTICK_ENABLE;
+
     return L_EOK;
 }
 
